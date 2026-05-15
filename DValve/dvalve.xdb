@@ -1,0 +1,1575 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-21:57:29" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="DValve" version="2.42" dateTime="dt#2026-05-13-11:59:57">
+		<comment>Digital valve function Normally closed</comment>
+		<attribute name="TypePassword" value=""></attribute>
+		<attribute name="TypeProtectionLevel" value="2#0000_0000"></attribute>
+		<attribute name="TypeCodeCheckSumString" value="B9B9"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="5FF5"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="33"></attribute>
+		<inputParameters>
+			<variables name="Valve_Command" typeName="BOOL">
+				<comment>Auto command valve</comment>
+				<attribute name="PositionPin" value="4"></attribute>
+			</variables>
+			<variables name="Angle" typeName="WORD">
+				<attribute name="PositionPin" value="6"></attribute>
+			</variables>
+			<variables name="System" typeName="INT">
+				<attribute name="PositionPin" value="7"></attribute>
+			</variables>
+			<variables name="In" typeName="DValve_In">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="Enable" typeName="BOOL">
+				<comment>Valve is enabled. Alarms are suppressed when the valve is not enabled</comment>
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inputParameters>
+		<inOutParameters>
+			<variables name="InOut" typeName="DValve_InOut">
+				<comment>InOut Signals</comment>
+				<attribute name="PositionPin" value="3"></attribute>
+			</variables>
+			<variables name="General" typeName="General">
+				<comment>General struct used in almost all function blocks</comment>
+				<attribute name="PositionPin" value="5"></attribute>
+			</variables>
+		</inOutParameters>
+		<outputParameters>
+			<variables name="Out" typeName="DValve_Out">
+				<comment>Output signals</comment>
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="travelActiveTime" typeName="INT">
+				<attribute name="PositionPin" value="6"></attribute>
+			</variables>
+			<variables name="travelDeactiveTime" typeName="INT">
+				<attribute name="PositionPin" value="7"></attribute>
+			</variables>
+		</outputParameters>
+		<publicLocalVariables>
+			<variables name="Parameters" typeName="DValve_Param">
+				<comment>Valve parameters</comment>
+			</variables>
+		</publicLocalVariables>
+		<privateLocalVariables>
+			<variables name="TOF_DelayOut" typeName="TOF"></variables>
+			<variables name="TOF_Valve_2" typeName="TOF"></variables>
+			<variables name="TOF_Valve_3" typeName="TOF"></variables>
+			<variables name="TON_Alarm" typeName="TON"></variables>
+			<variables name="Feedback_Open" typeName="BOOL"></variables>
+			<variables name="Feedback_Closed" typeName="BOOL"></variables>
+			<variables name="Delayed_Output" typeName="BOOL"></variables>
+			<variables name="mOutput" typeName="BOOL"></variables>
+			<variables name="TOF_1" typeName="TOF"></variables>
+			<variables name="ValveStartMoving" typeName="BOOL"></variables>
+			<variables name="BtnManual" typeName="BOOL"></variables>
+			<variables name="ShiftAngle_0" typeName="RotateValve"></variables>
+			<variables name="ThisValveInManual" typeName="EBOOL"></variables>
+			<variables name="ExtraManualBlock" typeName="BOOL"></variables>
+			<variables name="tempOut" typeName="BOOL"></variables>
+			<variables name="wSystem" typeName="WORD"></variables>
+			<variables name="BitCheck_SystemIn" typeName="BitCheck"></variables>
+			<variables name="SystemIn_Out" typeName="WORD"></variables>
+			<variables name="SystemInB0" typeName="BOOL"></variables>
+			<variables name="SystemInB1" typeName="BOOL"></variables>
+			<variables name="SystemInB2" typeName="BOOL"></variables>
+			<variables name="SystemInB3" typeName="BOOL"></variables>
+			<variables name="SystemInB4" typeName="BOOL"></variables>
+			<variables name="SystemInB5" typeName="BOOL"></variables>
+			<variables name="SystemInB6" typeName="BOOL"></variables>
+			<variables name="SystemInB7" typeName="BOOL"></variables>
+			<variables name="SystemInB8" typeName="BOOL"></variables>
+			<variables name="SystemInB9" typeName="BOOL"></variables>
+			<variables name="SystemInB10" typeName="BOOL"></variables>
+			<variables name="SystemInB11" typeName="BOOL"></variables>
+			<variables name="SystemInB12" typeName="BOOL"></variables>
+			<variables name="SystemInB13" typeName="BOOL"></variables>
+			<variables name="SystemInB14" typeName="BOOL"></variables>
+			<variables name="SystemInB15" typeName="BOOL"></variables>
+			<variables name="SystemNBBits" typeName="INT"></variables>
+			<variables name="BitCheck_GeneralMan" typeName="BitCheck"></variables>
+			<variables name="GeneralManual_Out" typeName="WORD"></variables>
+			<variables name="GeneralManualB0" typeName="BOOL"></variables>
+			<variables name="GeneralManualB1" typeName="BOOL"></variables>
+			<variables name="GeneralManualB2" typeName="BOOL"></variables>
+			<variables name="GeneralManualB3" typeName="BOOL"></variables>
+			<variables name="GeneralManualB4" typeName="BOOL"></variables>
+			<variables name="GeneralManualB5" typeName="BOOL"></variables>
+			<variables name="GeneralManualB6" typeName="BOOL"></variables>
+			<variables name="GeneralManualB7" typeName="BOOL"></variables>
+			<variables name="GeneralManualB8" typeName="BOOL"></variables>
+			<variables name="GeneralManualB9" typeName="BOOL"></variables>
+			<variables name="GeneralManualB10" typeName="BOOL"></variables>
+			<variables name="GeneralManualB11" typeName="BOOL"></variables>
+			<variables name="GeneralManualB12" typeName="BOOL"></variables>
+			<variables name="GeneralManualB13" typeName="BOOL"></variables>
+			<variables name="GeneralManualB14" typeName="BOOL"></variables>
+			<variables name="GeneralManualB15" typeName="BOOL"></variables>
+			<variables name="GeneralManualNBBits" typeName="INT"></variables>
+			<variables name="ManualGroep" typeName="WORD"></variables>
+			<variables name="GeneralGroep" typeName="WORD"></variables>
+			<variables name="ManualActive" typeName="BOOL"></variables>
+			<variables name="AirOkay" typeName="BOOL"></variables>
+		</privateLocalVariables>
+		<FBProgram name="Info">
+			<STSource>(*																					*)
+(* D_valve veranderd. (JB werstuurde 2 x 16bits naar het scherm, terwijl in de ene int alleen maar 0 of 1 staat, voor de manual knop					*)
+(*																					*)
+(* op die manier stuur je heel veel naar het scherm heen en weer, wat niet nodig is) het geheel veranderd, sturen nu nog maar 1 woord naar het scherm met daarin	*)	
+(*																					*)
+(* bit 0 &gt;&gt;&gt;   0=closed(grijs) / 1=open(groen)																*)
+(* bit 1 &gt;&gt;&gt;  1=Moving (geel), dit als beide eindschakelaars weg zijn)													*)
+(* bit 2 &gt;&gt;&gt;  1= alarm (rood)																		*)
+(* Bit 3 &gt;&gt;&gt; 1=manaul touch button visual and active															*)
+(* Bit 4 &gt;&gt;&gt; touch manual button																	*)
+(*																					*)
+(* bit5 tot Bit13 = hoek van de klep op het HMI van 0 tot 360 graden													*)													
+
+(* De vorige klep kon alleen maar gedraaid worden in stappen van 90 graden, daardoor kon ik nooit een klep schui platen... nu kan de klep 360 draaien.
+(*																					*)
+(*																					*)
+(* ─────────────────────────────────────────────────────────────────
+   BitCheck_SystemIn: splits het System-woord op in losse bits
+   Bit 0 = Fore systeem        (waarde 1)
+   Bit 1 = Aft systeem         (waarde 2)
+   Bit 2 = Lubrication systeem (waarde 4)
+   Bit 3 = EXACT-vlag: HMI manual-knoppen moeten exact overeenkomen
+           met de groepsindeling van deze klep
+   ───────────────────────────────────────────────────────────────── *)
+
+</STSource>
+		</FBProgram>
+		<FBProgram name="NewManual">
+			<STSource>(* Converteer System integer naar WORD voor bitverwerking *)
+wSystem := Int_To_word(System);
+
+(* ─────────────────────────────────────────────────────────────────
+   BitCheck_SystemIn: splits het System-woord op in losse bits
+   Bit 0 = Fore systeem        (waarde 1)
+   Bit 1 = Aft systeem         (waarde 2)
+   Bit 2 = Lubrication systeem (waarde 4)
+   Bit 3 = EXACT-vlag: HMI manual-knoppen moeten exact overeenkomen
+           met de groepsindeling van deze klep
+   ───────────────────────────────────────────────────────────────── *)
+BitCheck_SystemIn (WrdIn := wSystem,
+                   ValueOut =&gt; SystemIn_Out,
+                   Bit0 =&gt; SystemInB0,
+                   Bit1 =&gt; SystemInB1,
+                   Bit2 =&gt; SystemInB2,
+                   Bit3 =&gt; SystemInB3,
+                   Bit4 =&gt; SystemInB4,
+                   Bit5 =&gt; SystemInB5,
+                   Bit6 =&gt; SystemInB6,
+                   Bit7 =&gt; SystemInB7,
+                   Bit8 =&gt; SystemInB8,
+                   Bit9 =&gt; SystemInB9,
+                   Bit10 =&gt; SystemInB10,
+                   Bit11 =&gt; SystemInB11,
+                   Bit12 =&gt; SystemInB12,
+                   Bit13 =&gt; SystemInB13,
+                   Bit14 =&gt; SystemInB14,
+                   Bit15 =&gt; SystemInB15,
+                   NumberOffBits =&gt; SystemNBBits);
+
+(* ─────────────────────────────────────────────────────────────────
+   BitCheck_GeneralMan: splits het HMI manual-woord op in losse bits
+   Bit 0 = Systeem 1 (Fore) in manual gezet via HMI
+   Bit 1 = Systeem 2 (Aft) in manual gezet via HMI
+   Bit 2 = Lubrication actief gezet via HMI
+   ───────────────────────────────────────────────────────────────── *)
+BitCheck_GeneralMan (WrdIn := General.Manual.wrd,
+                   ValueOut =&gt; GeneralManual_Out,
+                   Bit0 =&gt; GeneralManualB0,
+                   Bit1 =&gt; GeneralManualB1,
+                   Bit2 =&gt; GeneralManualB2,
+                   Bit3 =&gt; GeneralManualB3,
+                   Bit4 =&gt; GeneralManualB4,
+                   Bit5 =&gt; GeneralManualB5,
+                   Bit6 =&gt; GeneralManualB6,
+                   Bit7 =&gt; GeneralManualB7,
+                   Bit8 =&gt; GeneralManualB8,
+                   Bit9 =&gt; GeneralManualB9,
+                   Bit10 =&gt; GeneralManualB10,
+                   Bit11 =&gt; GeneralManualB11,
+                   Bit12 =&gt; GeneralManualB12,
+                   Bit13 =&gt; GeneralManualB13,
+                   Bit14 =&gt; GeneralManualB14,
+                   Bit15 =&gt; GeneralManualB15,
+                   NumberOffBits =&gt; GeneralManualNBBits);
+
+(* Haal alleen de 3 groepsbits op uit het System-woord (Fore/Aft/Lub) *)
+ManualGroep := SystemIn_Out &amp; 2#0000000000000111;
+
+(* Haal de HMI manual-knoppen op (8 bits, Fore/Aft/Lub en reserve) *)
+GeneralGroep := GeneralManual_Out &amp; 2#0000000011111111;
+
+(* ─────────────────────────────────────────────────────────────────
+   Bepaal of deze klep in ManualActive moet gaan
+
+   System waarden zonder EXACT-vlag (bit3=0, waarde &lt; 8):
+     1  = alleen Fore
+     2  = alleen Aft
+     3  = Fore of Aft
+     4  = alleen Lubrication
+   → LOOSE: klep gaat in manual als MINSTENS ÉÉN van zijn
+     groepsbits overeenkomt met de actieve HMI manual-knoppen
+
+   System waarden met EXACT-vlag (bit3=1, waarde &gt;= 8):
+     11 = Fore en Aft  → manual alleen als exact Fore+Aft actief zijn
+     12 = Lubrication  → manual alleen als exact Lub actief is
+   → EXACT: de actieve HMI manual-knoppen moeten precies
+     overeenkomen met de groepsindeling van deze klep
+   ───────────────────────────────────────────────────────────────── *)
+ManualActive := False;
+
+if wSystem &lt; 8 then
+    (* LOOSE: minimaal één groepsbit moet overeenkomen *)
+    if (ManualGroep &amp; GeneralGroep) &lt;&gt; 0 then
+        ManualActive := true;
+    end_if;
+else
+    (* EXACT: de groepsbits moeten precies overeenkomen *)
+    if ManualGroep = GeneralGroep then
+        ManualActive := true;
+    end_if;
+end_if;
+</STSource>
+		</FBProgram>
+		<FBProgram name="ValveNew">
+			<LDSource nbColumns="20">
+				<networkLD>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.ManualControl"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="BtnManual"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="11"></HLink>
+						</shortCircuit>
+						<coil typeCoil="resetCoil" coilVariableName="BtnManual"></coil>
+						<HLink nbCells="3"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="2"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="13"></emptyCell>
+						<control typeControl="jumpCoil" label="next"></control>
+						<emptyCell nbCells="3"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="3"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="btnManual"></contact>
+						<HLink nbCells="11"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="BtnManual"></coil>
+						<HLink nbCells="3"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<labelCell label="next">
+							<objPosition posX="0" posY="6"></objPosition>
+						</labelCell>
+						<emptyCell nbCells="19"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="17"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="InOut.ManualControl"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.Alarm_Reset"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<HLink nbCells="12"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Out.Alarm"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Enable"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="15"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="In.FB_Open"></contact>
+						<HLink nbCells="14"></HLink>
+						<coil typeCoil="coil" coilVariableName="Feedback_Open"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="In.FB_Closed"></contact>
+						<HLink nbCells="14"></HLink>
+						<coil typeCoil="coil" coilVariableName="Feedback_Closed"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="IS_PAR_CON (INP := System)"></contact>
+						<HLink nbCells="5"></HLink>
+						<contact typeContact="openContact" contactVariableName="ManualActive"></contact>
+						<HLink nbCells="5"></HLink>
+						<contact typeContact="closedContact" contactVariableName="General.ManualPressWhileBlocked"></contact>
+						<HLink nbCells="3"></HLink>
+						<coil typeCoil="coil" coilVariableName="ThisValveInManual"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="3"></emptyCell>
+						<FFBBlock instanceName="TOF_DelayOut" typeName="TOF" additionnalPinNumber="0" enEnO="true" width="10" height="4">
+							<objPosition posX="3" posY="20"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="T#100ms"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q" effectiveParameter="Delayed_Output"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="15"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="17"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Out.Output"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="17"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="PContact" contactVariableName="ThisValveInManual"></contact>
+						<HLink nbCells="4"></HLink>
+						<contact typeContact="openContact" contactVariableName="Delayed_Output"></contact>
+						<HLink nbCells="10"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="BtnManual"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="6"></emptyCell>
+						<VLink></VLink>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="System=11"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<VLink></VLink>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.ServiceAirForeOkay"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.ServiceAirAftOkay"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="System=3"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<VLink></VLink>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.ServiceAirAftOkay"></contact>
+						<HLink nbCells="4"></HLink>
+						<contact typeContact="openContact" contactVariableName="System=2"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.ServiceAirForeOkay"></contact>
+						<HLink nbCells="4"></HLink>
+						<contact typeContact="openContact" contactVariableName="System=1"></contact>
+						<HLink nbCells="8"></HLink>
+						<coil typeCoil="coil" coilVariableName="AirOkay"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="3"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="12"></emptyCell>
+						<FFBBlock instanceName="TOF_Valve_2" typeName="TOF" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="12" posY="33"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="Parameters.Delayed_Return"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="6"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="Valve_Command"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<contact typeContact="openContact" contactVariableName="Parameters.Clino_Signal"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<contact typeContact="closedContact" contactVariableName="Out.Alarm"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="AirOkay"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="ThisValveInManual"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<contact typeContact="openContact" contactVariableName="General.EMStopOkay"></contact>
+						<HLink nbCells="1"></HLink>
+						<coil typeCoil="coil" coilVariableName="mOutput"></coil>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="2"></emptyCell>
+						<contact typeContact="closedContact" contactVariableName="Parameters.Clino_Enable"></contact>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="11"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="3"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="ThisValveInManual"></contact>
+						<HLink nbCells="5"></HLink>
+						<contact typeContact="openContact" contactVariableName="BtnManual"></contact>
+						<HLink nbCells="8"></HLink>
+						<emptyCell nbCells="3"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="4"></emptyCell>
+						<FFBBlock instanceName="TOF_Valve_3" typeName="TOF" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="4" posY="39"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="Parameters.Delayed_ReturnOutput"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="14"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="mOutput"></contact>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="ThisValveInManual"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.ServiceAirForeOkay"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Enable"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.EMStopOkay"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<contact typeContact="closedContact" contactVariableName="Parameters.2Outputs"></contact>
+						<HLink nbCells="1"></HLink>
+						<coil typeCoil="coil" coilVariableName="Out.Output"></coil>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="9"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="7"></emptyCell>
+						<HLink nbCells="2"></HLink>
+						<coil typeCoil="coil" coilVariableName="tempOut"></coil>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="ThisValveInManual"></contact>
+						<HLink nbCells="6"></HLink>
+						<contact typeContact="openContact" contactVariableName="BtnManual"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="10"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.2Outputs"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.ServiceAirForeOkay"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.EMStopOkay"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="tempOut"></contact>
+						<HLink nbCells="3"></HLink>
+						<coil typeCoil="coil" coilVariableName="Out.OutputClose"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="9"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_Open"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="tempOut"></contact>
+						<HLink nbCells="3"></HLink>
+						<coil typeCoil="coil" coilVariableName="Out.OutputOpen"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="ThisValveInManual"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="5"></HLink>
+						</shortCircuit>
+						<HLink nbCells="11"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="BtnManual"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="General.ServiceAirForeOkay"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="5"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="General.EMStopOkay"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="5"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Enable"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="5"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="ExtraManualBlock"></contact>
+						<HLink nbCells="5"></HLink>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="Out.Output"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.2Outputs"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="Out.OutputOpen"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.2Outputs"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_Open"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="3"></emptyCell>
+						<VLink></VLink>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Feedback_Open"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="4"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="1"></emptyCell>
+						<FFBBlock instanceName="TON_Alarm" typeName="TON" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="12" posY="60"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="parameters.monitortime"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="6"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="10"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="closedContact" contactVariableName="Out.Output"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.2Outputs"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<contact typeContact="openContact" contactVariableName="General.PlcInRun"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Enable"></contact>
+						<HLink nbCells="1"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Out.Alarm"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="Out.OutputClose"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.2Outputs"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Feedback_Open"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="10"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="3"></emptyCell>
+						<VLink></VLink>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="10"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="4"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_Open"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="10"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="PContact" contactVariableName="Out.Alarm"></contact>
+						<HLink nbCells="16"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="General.Buzzer"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="7"></emptyCell>
+						<FFBBlock instanceName="TOF_1" typeName="TOF" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="7" posY="71"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="T#1500ms"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="11"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="PContact" contactVariableName="Out.Output"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="4"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="9"></HLink>
+						<coil typeCoil="coil" coilVariableName="ValveStartMoving"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="NContact" contactVariableName="Out.Output"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="17"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="16"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.HMIControl:=0;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_open"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="mOutput"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="2"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.HMIControl:=2;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="mOutput"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="5"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="6"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="mOutput"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="6"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Feedback_open"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="mOutput"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="5"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="6"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="ValveStartMoving"></contact>
+						<HLink nbCells="10"></HLink>
+						<emptyCell nbCells="6"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="mOutput"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="5"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Out.Alarm"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="4"></HLink>
+						<coil typeCoil="coil" coilVariableName="Out.IsClosed"></coil>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="mOutput"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Feedback_Closed"></contact>
+						<HLink nbCells="5"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="3"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.HMIControl:=InOut.HMIControl and 65534;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="mOutput"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Feedback_Open"></contact>
+						<HLink nbCells="5"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Out.Alarm"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="4"></HLink>
+						<coil typeCoil="coil" coilVariableName="Out.IsOpen"></coil>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="mOutput"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Feedback_Open"></contact>
+						<HLink nbCells="5"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.NormallyOpen"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="3"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.HMIControl:=InOut.HMIControl or 1;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Out.Alarm"></contact>
+						<HLink nbCells="13"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.HMIControl:=4;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="ThisValveInManual"></contact>
+						<HLink nbCells="13"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.HMIControl:=InOut.HMIControl Or 8;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="3"></emptyLine>
+					</typeLine>
+					<textBox width="11" height="1">Copied from klepfout_NC_2es
+    <objPosition posX="0" posY="56"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Status valve is closed
+    <objPosition posX="0" posY="84"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Manual bit -&gt; show touch switch on hmi screen
+    <objPosition posX="0" posY="95"></objPosition>
+					</textBox>
+					<textBox width="1" height="1">Geel<objPosition posX="18" posY="72"></objPosition>
+					</textBox>
+					<textBox width="1" height="1">Grijs<objPosition posX="16" posY="84"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Alarm
+    <objPosition posX="0" posY="92"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Status valve is open
+    <objPosition posX="0" posY="88"></objPosition>
+					</textBox>
+					<textBox width="1" height="1">Rood<objPosition posX="16" posY="92"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Status valve is in alarm
+    <objPosition posX="0" posY="9"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Status valve is moving
+    <objPosition posX="0" posY="70"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Valve output
+    <objPosition posX="0" posY="32"></objPosition>
+					</textBox>
+					<textBox width="6" height="2">InOut.HmiControl.4  = touch button manual open/closed in het hmi scherm.
+
+in het scherm word het bitje geset, hier , nadat dat gezien is, word het bitje weer gereset<objPosition posX="0" posY="0"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Set buzzer on active alarm
+    <objPosition posX="0" posY="67"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Reset manual control when not in manual mode
+    <objPosition posX="0" posY="49"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Check if valve was open in auto when switching to manual<objPosition posX="0" posY="17"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Swap feedback when normally open is activated
+    <objPosition posX="0" posY="13"></objPosition>
+					</textBox>
+					<textBox width="1" height="1">Groen<objPosition posX="16" posY="88"></objPosition>
+					</textBox>
+				</networkLD>
+			</LDSource>
+		</FBProgram>
+		<FBProgram name="angle">
+			<STSource>(* Als input Angle is aangesloten, word de waardie daar staat op de goede plek in het statuswoord gezet *)
+
+if IS_PAR_CON (INP := Angle) then
+		ShiftAngle_0 (angle := ANGLE,
+		              Status := InOut.HMIControl);
+end_if;
+</STSource>
+		</FBProgram>
+	</FBSource>
+	<DDTSource DDTName="DValve_In" version="0.05" dateTime="dt#2018-04-14-03:01:32">
+		<comment>Struct for inputs used in Digital valve FB</comment>
+		<attribute name="TypeSignatureCheckSumString" value="BE00"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="3"></attribute>
+		<structure>
+			<variables name="FB_Open" typeName="BOOL">
+				<comment>Feedback signal valve is open</comment>
+			</variables>
+			<variables name="FB_Closed" typeName="BOOL">
+				<comment>Feedback signal valve is closed</comment>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="DValve_InOut" version="0.15" dateTime="dt#2025-03-24-14:01:17">
+		<comment>Digital valve InOut struct also used in HMI</comment>
+		<attribute name="TypeSignatureCheckSumString" value="76D2"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="2"></attribute>
+		<structure>
+			<variables name="HMIControl" typeName="WORD">
+				<comment>Manual Control 0=idle, 1=active, 2= Moving, 3=alarm, 4=InManual, 5=manualCOntrol</comment>
+			</variables>
+			<variables name="Active" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="Moving" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="Alarm" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="InManual" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="ManualControl" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="HMIControl_b5" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="HMIControl_b6" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="HMIControl_b7" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="HMIControl_b8" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="HMIControl_b9" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="HMIControl_b10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="HMIControl_b11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="HMIControl_b12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="HMIControl_b13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="HMIControl_b14" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="HMIControl_b15" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="General" version="0.50" dateTime="dt#2025-09-30-07:43:27">
+		<comment>General struct used in most functionblocks</comment>
+		<attribute name="TypeSignatureCheckSumString" value="F64F"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="6"></attribute>
+		<structure>
+			<variables name="Word1" typeName="WORD">
+				<comment>ControlWord</comment>
+			</variables>
+			<variables name="Alarm_Active" typeName="BOOL">
+				<comment>Alarm is active</comment>
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="Alarm_Reset" typeName="BOOL">
+				<comment>Command reset alarm</comment>
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="W1B2" typeName="BOOL">
+				<comment>Manual mode is active</comment>
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="Buzzer" typeName="BOOL">
+				<comment>Buzzer is active</comment>
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="ServiceAirForeOkay" typeName="BOOL">
+				<comment>Service air is OK</comment>
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="ServiceAirAftOkay" typeName="BOOL">
+				<comment>res</comment>
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="Acknowledge" typeName="BOOL">
+				<comment>Ackowledge alarms</comment>
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="EMStopOkay" typeName="BOOL">
+				<comment>EmergencyStop is OK</comment>
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="aEmotorIsStarting" typeName="BOOL">
+				<comment>A Emotor is starting, other Emotors need to wait</comment>
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="aEmotorWaitOnPMS" typeName="BOOL">
+				<comment>If system not used for 15 min, stop all what still running </comment>
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="SimulationOn" typeName="BOOL">
+				<comment>Simulation is on, for testing only</comment>
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="Reloaderset12Active" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="Reloaderset34Active" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="PlcInRun" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="AutoCalibrate" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="ResetCalibrate" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+			<variables name="Word2" typeName="WORD"></variables>
+			<variables name="ShowAskPW" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="ScreenIsTouched" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="ScreenIsChanged" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="W2B5_wasBlockManSys2" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="W2B6_wasSys1Man" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="W2B7_WasSyS2Man" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="Sys1ToHold" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="Sys2ToHold" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="W2B10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="W2B11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="W2B12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="FirstScan" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="SystemISBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="ManualPressWhileBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+			<variables name="FirstStopAll" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="W2B4_wasBlockManSys1" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="Manual" typeName="manualWrd"></variables>
+			<variables name="NextStartDelayTime" typeName="INT">
+				<comment>Hold next Emotor to start in sec</comment>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="manualWrd" version="0.04" dateTime="dt#2025-08-21-12:32:48">
+		<attribute name="TypeSignatureCheckSumString" value="330D"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="2"></attribute>
+		<structure>
+			<variables name="wrd" typeName="WORD"></variables>
+			<variables name="Sys1Manual" typeName="BOOL">
+				<comment>b1</comment>
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="Sys2Manual" typeName="BOOL">
+				<comment>b2</comment>
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="Sys3Manual" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="Sys4Manual" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="Man_b4" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="Man_B5" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="Man_B6" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="Man_B7" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="Block_ManSys1" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="Block_ManSys2" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="B10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="B11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="B12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="B13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="B14" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="B15" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="DValve_Out" version="0.08" dateTime="dt#2024-05-03-08:47:03">
+		<comment>Struct for outputs used in Digital valve FB</comment>
+		<attribute name="TypeSignatureCheckSumString" value="8085"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="7"></attribute>
+		<structure>
+			<variables name="StatusWord" typeName="WORD">
+				<comment>Statusword</comment>
+			</variables>
+			<variables name="Output" typeName="BOOL">
+				<comment>Output signal</comment>
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="IsOpen" typeName="BOOL">
+				<comment>Status valve is open</comment>
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="IsClosed" typeName="BOOL">
+				<comment>Status valve is closed</comment>
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="Alarm" typeName="BOOL">
+				<comment>Valve is in alarmstate</comment>
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="res4" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="res5" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="res6" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="res7" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="res8" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="res9" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="res10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="res11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="res12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="res13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="OutputOpen" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="OutputClose" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+			<variables name="timing" typeName="TimingValves"></variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="TimingValves" version="0.01" dateTime="dt#2022-04-08-10:53:03">
+		<attribute name="TypeSignatureCheckSumString" value="C1D9"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="5"></attribute>
+		<structure>
+			<variables name="ReactActive" typeName="INT"></variables>
+			<variables name="TravelActive" typeName="INT"></variables>
+			<variables name="ReactDeactive" typeName="INT"></variables>
+			<variables name="TravelDeactive" typeName="INT"></variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="DValve_Param" version="0.09" dateTime="dt#2024-05-03-08:47:56">
+		<comment>Parameters which can be used to change a valve's behaviour while still using the same FB</comment>
+		<attribute name="TypeSignatureCheckSumString" value="D9E7"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="8"></attribute>
+		<structure>
+			<variables name="NormallyOpen" typeName="BOOL">
+				<comment>0=Normally Closed, 1=Normally Open</comment>
+			</variables>
+			<variables name="Delayed_ReturnOutput" typeName="TIME">
+				<comment>Delay the signal when the output is removed (only output)</comment>
+			</variables>
+			<variables name="Delayed_Return" typeName="TIME">
+				<comment>Delay the signal when the output is removed (output and status)</comment>
+			</variables>
+			<variables name="Clino_Enable" typeName="BOOL">
+				<comment>Enable the clino function for valves</comment>
+			</variables>
+			<variables name="Clino_Signal" typeName="BOOL">
+				<comment>Close the valve when Clino signal comes</comment>
+			</variables>
+			<variables name="MonitorTime" typeName="TIME">
+				<comment>Time the valve is moving from open to closed/closed to open</comment>
+			</variables>
+			<variables name="2Outputs" typeName="BOOL"></variables>
+		</structure>
+	</DDTSource>
+	<FBSource nameOfFBType="RotateValve" version="0.07" dateTime="dt#2021-08-18-14:19:29">
+		<comment>Turn a valve on the HMI. 0 to 90</comment>
+		<attribute name="TypeCodeCheckSumString" value="2A09"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="2E22"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="3"></attribute>
+		<inputParameters>
+			<variables name="angle" typeName="WORD">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inputParameters>
+		<inOutParameters>
+			<variables name="Status" typeName="WORD">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+		</inOutParameters>
+		<privateLocalVariables>
+			<variables name="Wrd_angle" typeName="WORD"></variables>
+		</privateLocalVariables>
+		<FBProgram name="Prg">
+			<STSource>Wrd_angle:= SHL_WORD (IN := angle, N := 5); 
+
+Status:=Status or Wrd_angle;
+
+
+
+</STSource>
+		</FBProgram>
+	</FBSource>
+	<FBSource nameOfFBType="BitCheck" version="0.11" dateTime="dt#2026-05-11-14:17:40">
+		<comment>Function Count how many bits there are 1 in a word</comment>
+		<attribute name="TypeCodeCheckSumString" value="DC0D"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="C978"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="21"></attribute>
+		<inputParameters>
+			<variables name="WrdIn" typeName="WORD">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inputParameters>
+		<outputParameters>
+			<variables name="ValueOut" typeName="WORD">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="Bit0" typeName="BOOL">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="Bit1" typeName="BOOL">
+				<attribute name="PositionPin" value="3"></attribute>
+			</variables>
+			<variables name="Bit2" typeName="BOOL">
+				<attribute name="PositionPin" value="4"></attribute>
+			</variables>
+			<variables name="Bit3" typeName="BOOL">
+				<attribute name="PositionPin" value="5"></attribute>
+			</variables>
+			<variables name="Bit4" typeName="BOOL">
+				<attribute name="PositionPin" value="6"></attribute>
+			</variables>
+			<variables name="Bit5" typeName="BOOL">
+				<attribute name="PositionPin" value="7"></attribute>
+			</variables>
+			<variables name="Bit6" typeName="BOOL">
+				<attribute name="PositionPin" value="8"></attribute>
+			</variables>
+			<variables name="Bit7" typeName="BOOL">
+				<attribute name="PositionPin" value="9"></attribute>
+			</variables>
+			<variables name="Bit8" typeName="BOOL">
+				<attribute name="PositionPin" value="10"></attribute>
+			</variables>
+			<variables name="Bit9" typeName="BOOL">
+				<attribute name="PositionPin" value="11"></attribute>
+			</variables>
+			<variables name="Bit10" typeName="BOOL">
+				<attribute name="PositionPin" value="12"></attribute>
+			</variables>
+			<variables name="Bit11" typeName="BOOL">
+				<attribute name="PositionPin" value="13"></attribute>
+			</variables>
+			<variables name="Bit12" typeName="BOOL">
+				<attribute name="PositionPin" value="14"></attribute>
+			</variables>
+			<variables name="Bit13" typeName="BOOL">
+				<attribute name="PositionPin" value="15"></attribute>
+			</variables>
+			<variables name="Bit14" typeName="BOOL">
+				<attribute name="PositionPin" value="16"></attribute>
+			</variables>
+			<variables name="Bit15" typeName="BOOL">
+				<attribute name="PositionPin" value="17"></attribute>
+			</variables>
+			<variables name="Even" typeName="BOOL">
+				<attribute name="PositionPin" value="18"></attribute>
+			</variables>
+			<variables name="NumberOffBits" typeName="INT">
+				<attribute name="PositionPin" value="19"></attribute>
+			</variables>
+		</outputParameters>
+		<privateLocalVariables>
+			<variables name="Count" typeName="INT"></variables>
+			<variables name="Temp" typeName="WORD"></variables>
+			<variables name="oldCount" typeName="INT"></variables>
+			<variables name="gelijk" typeName="BOOL"></variables>
+			<variables name="fault" typeName="INT"></variables>
+		</privateLocalVariables>
+		<FBProgram name="info">
+			<STSource>(*
+
+Kijken hoeveel bitjes er hoog zijn in een WRD *)
+</STSource>
+		</FBProgram>
+		<FBProgram name="ProgramBitCheck">
+			<STSource>
+(* copy bits from Word to bools *)
+
+Bit0:=Wrdin.0;
+Bit1:=Wrdin.1;
+Bit2:=Wrdin.2;
+Bit3:=Wrdin.3;
+Bit4:=Wrdin.4;
+Bit5:=Wrdin.5;
+Bit6:=Wrdin.6;
+Bit7:=Wrdin.7;
+Bit8:=Wrdin.8;
+Bit9:=Wrdin.9;
+Bit10:=Wrdin.10;
+Bit11:=Wrdin.11;
+Bit12:=Wrdin.12;
+Bit13:=Wrdin.13;
+Bit14:=Wrdin.14;
+Bit15:=Wrdin.15;
+
+ValueOut:=Wrdin;
+NumberOffBits:=0;
+temp:=WrdIn;
+Count:=0;
+
+while Count&lt;16 do
+	if (temp AND 2#0000000000000001)=1 then
+		NumberOffBits:=NumberOffBits+1;
+	end_if;
+
+	temp := SHR (IN := temp,N := 1);
+
+	Count:=Count+1;
+
+		if (oldCount=Count) then 
+			jmp end; (* gezien dat hij in deze stap blijft hangen? *)
+			fault:=fault+1;
+		end_if;
+
+	oldCount:=Count;
+
+end_while;
+
+
+end:
+
+</STSource>
+		</FBProgram>
+	</FBSource>
+</FBExchangeFile>
