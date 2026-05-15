@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-22:37:46" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1728" dateTime="date_and_time#2026-5-15-23:19:52"></contentHeader>
+	<FBSource nameOfFBType="Random" version="0.02" dateTime="dt#2020-05-07-15:33:42">
+		<comment>Generates a nearly random number between 1-10</comment>
+		<attribute name="TypeCodeCheckSumString" value="AA43"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="6404"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="2"></attribute>
+		<inOutParameters>
+			<variables name="random" typeName="UDINT">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inOutParameters>
+		<FBProgram name="prg">
+			<STSource>random := mod((7 * random), 11);
+</STSource>
+		</FBProgram>
+	</FBSource>
+</FBExchangeFile>
