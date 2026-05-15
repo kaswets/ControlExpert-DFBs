@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-22:11:7" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="MODBUS_Shift" version="0.07" dateTime="dt#2025-11-05-14:18:03">
+		<comment>Byte/word shifting in Modbus communication</comment>
+		<attribute name="TypeCodeCheckSumString" value="DF25"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="F1A0"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="4"></attribute>
+		<inputParameters>
+			<variables name="In" typeName="INT">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inputParameters>
+		<outputParameters>
+			<variables name="out1" typeName="INT">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="out2" typeName="INT">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+		</outputParameters>
+		<FBProgram name="prg">
+			<STSource>
+out1:=In &amp; 2#1111111100000000 ;
+out2:=In &amp; 2#0000000011111111 ;
+</STSource>
+		</FBProgram>
+	</FBSource>
+</FBExchangeFile>
