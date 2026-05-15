@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-22:8:27" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="RotateValve" version="0.07" dateTime="dt#2021-08-18-14:19:29">
+		<comment>Turn a valve on the HMI. 0 to 90</comment>
+		<attribute name="TypeCodeCheckSumString" value="2A09"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="2E22"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="3"></attribute>
+		<inputParameters>
+			<variables name="angle" typeName="WORD">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inputParameters>
+		<inOutParameters>
+			<variables name="Status" typeName="WORD">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+		</inOutParameters>
+		<privateLocalVariables>
+			<variables name="Wrd_angle" typeName="WORD"></variables>
+		</privateLocalVariables>
+		<FBProgram name="Prg">
+			<STSource>Wrd_angle:= SHL_WORD (IN := angle, N := 5); 
+
+Status:=Status or Wrd_angle;
+
+
+
+</STSource>
+		</FBProgram>
+	</FBSource>
+</FBExchangeFile>
