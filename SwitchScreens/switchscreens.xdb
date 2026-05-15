@@ -1,0 +1,1021 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-16:56:12" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="SwitchScreens" version="1.47" dateTime="dt#2026-05-13-15:07:39">
+		<attribute name="TypeCodeCheckSumString" value="4FCD"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="0DF0"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="36"></attribute>
+		<inputParameters>
+			<variables name="Reset" typeName="BOOL">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="DefaultIpNo1" typeName="STRING">
+				<comment>this IP adress always on place 1</comment>
+				<attribute name="PositionPin" value="4"></attribute>
+			</variables>
+			<variables name="DefaultIpNo2" typeName="STRING">
+				<comment>this IP adress always on place 2</comment>
+				<attribute name="PositionPin" value="5"></attribute>
+			</variables>
+			<variables name="DefaultIpNo3" typeName="STRING">
+				<comment>This Ip adress always on place 3</comment>
+				<attribute name="PositionPin" value="6"></attribute>
+			</variables>
+			<variables name="DefaultIpNo4" typeName="STRING">
+				<comment>This IP adress always on place 4</comment>
+				<attribute name="PositionPin" value="7"></attribute>
+			</variables>
+			<variables name="PassWordActive" typeName="BOOL">
+				<attribute name="PositionPin" value="8"></attribute>
+			</variables>
+			<variables name="AutoSwitchTime" typeName="INT">
+				<attribute name="PositionPin" value="3"></attribute>
+			</variables>
+		</inputParameters>
+		<inOutParameters>
+			<variables name="SwitchScreenInOut" typeName="ARRAY[1..4] OF ScreenSwitch">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inOutParameters>
+		<outputParameters>
+			<variables name="ScreenActive" typeName="INT">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="WantsControl" typeName="INT">
+				<attribute name="PositionPin" value="3"></attribute>
+			</variables>
+			<variables name="PressedWhileBlocked" typeName="BOOL">
+				<attribute name="PositionPin" value="8"></attribute>
+			</variables>
+		</outputParameters>
+		<privateLocalVariables>
+			<variables name="tmpReset" typeName="EBOOL"></variables>
+			<variables name="cnt" typeName="INT"></variables>
+			<variables name="ScreenNumber" typeName="INT"></variables>
+			<variables name="secPuls" typeName="EBOOL"></variables>
+			<variables name="ChangeScreen" typeName="EBOOL"></variables>
+			<variables name="NoScreenHasControl" typeName="BOOL"></variables>
+			<variables name="SwitchCounter" typeName="INT"></variables>
+			<variables name="SameIp" typeName="BOOL"></variables>
+			<variables name="cnt2" typeName="INT"></variables>
+			<variables name="ScreenIsAlive" typeName="ARRAY[1..4] OF EBOOL"></variables>
+			<variables name="AliveCounter" typeName="ARRAY[1..4] OF INT"></variables>
+			<variables name="PreAliveCounter" typeName="ARRAY[1..4] OF INT"></variables>
+			<variables name="LostAScreen" typeName="BOOL"></variables>
+			<variables name="temp1" typeName="INT"></variables>
+			<variables name="temp2" typeName="INT"></variables>
+			<variables name="temp3" typeName="INT"></variables>
+			<variables name="temp4" typeName="INT"></variables>
+			<variables name="temp5" typeName="EBOOL"></variables>
+			<variables name="temp6" typeName="EBOOL"></variables>
+			<variables name="temp7" typeName="EBOOL"></variables>
+			<variables name="temp8" typeName="EBOOL"></variables>
+			<variables name="temp9" typeName="BOOL"></variables>
+			<variables name="temp10" typeName="BOOL"></variables>
+			<variables name="temp11" typeName="BOOL"></variables>
+			<variables name="temp12" typeName="BOOL"></variables>
+			<variables name="lostScreenNbr" typeName="INT"></variables>
+			<variables name="otherScreenWantsControl" typeName="ARRAY[0..5] OF BOOL"></variables>
+			<variables name="otherscreenControlCounter" typeName="ARRAY[1..4] OF INT"></variables>
+			<variables name="dummy" typeName="BOOL"></variables>
+			<variables name="dummy2" typeName="INT"></variables>
+			<variables name="dummy0" typeName="INT"></variables>
+			<variables name="dummy1" typeName="INT"></variables>
+			<variables name="dummy3" typeName="INT"></variables>
+			<variables name="DefaultIp1Inlist" typeName="BOOL"></variables>
+			<variables name="DefaultIp2Inlist" typeName="BOOL"></variables>
+			<variables name="DefaultIp3Inlist" typeName="BOOL"></variables>
+			<variables name="DefaultIp4Inlist" typeName="BOOL"></variables>
+			<variables name="Found1AtPlace" typeName="INT"></variables>
+			<variables name="Found3AtPlace" typeName="INT"></variables>
+			<variables name="Found4AtPlace" typeName="INT"></variables>
+			<variables name="Found2AtPlace" typeName="INT"></variables>
+			<variables name="tmpSwitchScreenInOut" typeName="ScreenSwitch"></variables>
+			<variables name="SwitchTime" typeName="INT"></variables>
+		</privateLocalVariables>
+		<FBProgram name="Info">
+			<STSource>(*
+
+Works with HMI's 
+
+Every screen is the same. the only differents is his IP-Adress
+(all works on the Ip-Adress)
+only 1 screen can be active, and have the controls
+
+in every screens are 5 actions running...
+(it is possible to put them all 1 one action,in vijeo, but for debugging is this more readable )
+
+
+There is one struct variable 
+
+
+InOut SwitchScreen
+
+
+switchScreen is a Array of struct ScreenSwitch 
+
+
+struct ScreenSwitch +
+		    + ConnectedScreen  string(16);  IP Adress HMI
+		    + ActiveScreen     int       ;  Number of active screen
+		    + SwitchScreenCnt  int       ;  By take over  shows the countdown counter on the screens
+		    + Buttons		struct(ScreenSwitchButtons) +
+								    + BtnYes			bit
+								    + BtnNo			bit	
+								    + BtnWantControl		bit
+								    + OtherScreenWantControl	bit
+								    + ThisScreenIaAlive		bit
+
+*)
+
+(* 
+2020-10-27 asw
+make 4 default ipadress inputs.
+if there is a Ip adress on the input.. then if a found IP adress is the same as the ip adress at the input, the screen always get that number
+*)
+
+(*
+2020-10-28 asw
+Block take over , on the active screen you can block the take over on the other screens..
+If Input 'PassWord' is true, the button  'Block take over' is enabled. so if it always high, they always can control this function
+if you use a password bit, the need to give a good password first.
+if they press the button while it is blocked, output 'PressedWhileBlocked' is one cyclus High, so you can use it for a warning in the screen,
+or open the password popup.
+*)
+
+(*
+2021-03-15
+little change, that the array pointer needs tobe bigger as 0 , so we don't get %s20 alarms anymore
+*)
+
+(* action in the hmi screens (in all screens they are the same, it all works on the different IP-Adress
+First script checks in the PLC if his IP-Adress is already in the list
+If it not, it search for a empty spot, and put his IP-adress there
+
+---------------------------------------------------------------------------------------------------------------------------------
+action 1 
+periodic , 0,5 sec
+
+ScreenOnCounter=ScreenOnCounter + 1
+
+
+script in HMI
+
+			//  make intern variables
+			int Count=0;
+			String IpAdress;
+			int alreadyInList;
+			int ScreenOnCount;
+
+			IpAdress="";
+
+			ScreenOnCount=ScreenOnCounter.getIntValue();
+
+			if (ScreenOnCount&gt;10)
+			{
+
+			// get ip adress from this HMI
+			IpAdress=Sys.getInfoString(IP_ADDRESS_1);
+
+			alreadyInList=0;
+			// Check is this Ip-Adress already is in the list in the PLC
+			while (Count&lt;4)
+			{
+			  if (ScreenChange.SwitchScreen[Count].ConnectedScreen.getStringValue().compareTo(IpAdress) == 0)
+			  {
+			  alreadyInList=1;	
+			  return; // &lt;-Yes, so exit script
+			  };
+			 Count++;
+			  };
+  
+			Count=0;
+
+			// No, Ip-Adress is not in the list
+			// search a empt place, and copy Ip-Adres in list
+			if (alreadyInList==0){
+			  while (Count&lt;4)
+			  {
+			    if (ScreenChange.SwitchScreen[Count].ConnectedScreen.getStringValue().compareTo("") == 0)
+			    {
+			      ScreenChange.SwitchScreen[Count].ConnectedScreen.write(IpAdress);
+			      return;
+			    };
+			    Count++;  
+			    };
+			   };
+			 };
+
+
+---------------------------------------------------------------------------------------------------------------------------------
+action 2 
+periodic , 0,1 sec
+script in HMI
+
+
+			int Cnt=0;
+			String IpAdress;
+
+
+			IpAdress="";
+
+			IpAdress=Sys.getInfoString(IP_ADDRESS_1);
+
+
+			// check if this hmi already in the list, and what is his number
+			while (Cnt&lt;4)
+			{
+			  if (ScreenChange.SwitchScreen[Cnt].ConnectedScreen.getStringValue().compareTo(IpAdress) == 0)
+			    {
+			    ScreenChange.ScreenNumber.write(Cnt); // &lt;- put number of this screen in the list 
+			    };
+			  Cnt++;
+			};
+  
+
+---------------------------------------------------------------------------------------------------------------------------------
+action 3 
+periodic , 0,1 sec
+script in HMI
+
+
+			int ScreenNumber=0;
+			int thisScreenActive=0;
+
+			// copy bits from list in the plc to internal bits in the screen
+			// this because I want all the screens the same
+
+			// Get screennumber from list in the PLC
+			ScreenNumber = ScreenChange.ScreenNumber.getIntValue();
+
+			// copy status internal bit ThisScreenActive from list in the PLC
+			thisScreenActive = ScreenChange.SwitchScreen[ScreenNumber].ActiveScreen.getIntValue();
+
+			// copy intern bit ScreenIsAlve to list in the PLC
+			if (thisScreenActive  == 1)
+			{
+			    ScreenChange.ScreenIsActive.write(1);
+			}
+			else
+			{
+			    ScreenChange.ScreenIsActive.write(0);
+			};
+		
+---------------------------------------------------------------------------------------------------------------------------------
+action 4
+periodic , 0,5 sec
+script in HMI
+
+			int ScreenNumber;
+
+			// get number from this screen
+			ScreenNumber = ScreenChange.ScreenNumber.getIntValue();
+
+			// set alive bit in this screen
+			// PLc reset this bit
+			// If bit stays low, screen is not alive
+			ScreenChange.SwitchScreen[ScreenChange.ScreenNumber.getIntValue()].buttons.ThisScreenIsAlive.write(1);
+
+---------------------------------------------------------------------------------------------------------------------------------
+
+Word  gebruikt in :
+
+190117 FUJIAN DN455 01&amp;02
+060000 VAMO NACC NEWYORKER 05034
+
+250081 NACC XL288 &amp; NACC XL289
+*)
+
+(* ************************************************************************** *)
+(* ************  SwitchScreens  -  Function Block Documentation  ************ *)
+(* ************************************************************************** *)
+(*                                                                            *)
+(*   FB Name                   : SwitchScreens                                *)
+(*   Version                   : 1.46                                         *)
+(*   Platform                  : Schneider Control Expert V14.1               *)
+(*   HMI                       : Vijeo Designer                               *)
+(*   Max screens               : 4                                            *)
+(*   Author                    : ASW                                          *)
+(*   Updated                   : 2026                                         *)
+(*                                                                            *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   1. PURPOSE                                                               *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* This FB manages multiple identical HMI panels connected to one PLC.        *)
+(* Only ONE panel is active at a time and may send operator commands.         *)
+(* All other panels are view-only monitors.                                   *)
+(*                                                                            *)
+(* Key features:                                                              *)
+(*   - All panels run the SAME Vijeo application - no separate app per        *)
+(*     location                                                               *)
+(*   - Panel identity is based on IP address - read at runtime by HMI script  *)
+(*   - Panels self-register in the PLC array on startup - no manual config    *)
+(*     needed                                                                 *)
+(*   - Take-over: any panel can request control, active panel can allow or    *)
+(*     deny                                                                   *)
+(*   - Automatic take-over if active panel does not respond within countdown  *)
+(*   - Block take-over: active panel can lock out requests (password          *)
+(*     protected)                                                             *)
+(*   - Alive monitoring: offline panels are automatically removed from the    *)
+(*     list                                                                   *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   2. BACKGROUND                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* Originally all panels were parallel - any panel could operate at any time. *)
+(* This caused confusion when two operators worked simultaneously.            *)
+(*                                                                            *)
+(* First fix: separate Vijeo app per location (bridge/controlroom/mess).      *)
+(* Problem: every change had to be made in 3 projects. Easy to forget one.    *)
+(*                                                                            *)
+(* Solution: one application for all panels, identity via IP address.         *)
+(* The PLC handles all switching logic. HMI scripts handle registration.      *)
+(* A change to any screen element is made ONCE and applies to all panels.     *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   3. DATA STRUCTURES                                                       *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* InOut: SwitchScreenInOut[1..4] OF ScreenSwitch                             *)
+(*                                                                            *)
+(* ScreenSwitch struct:                                                       *)
+(*     ConnectedScreen         : STRING[16] - IP address, written by HMI      *)
+(*                               Script 1                                     *)
+(*     ActiveScreen            : INT - 1=this panel active, 0=view only       *)
+(*     SwitchScreenCnt         : INT - countdown seconds during take-over     *)
+(*     Buttons                 : ScreenSwitchButtons - bit-packed word (see   *)
+(*                               below)                                       *)
+(*                                                                            *)
+(* ScreenSwitchButtons - bit layout:                                          *)
+(*     Bit  0 BtnYes       HMI-&gt;PLC          active panel confirms take-over  *)
+(*     Bit  1 BtnNo        HMI-&gt;PLC          active panel denies take-over    *)
+(*     Bit  2 BtnWantCtrl  HMI-&gt;PLC          view-only panel requests control *)
+(*     Bit  3 OtherWants   PLC-&gt;HMI          show take-over popup on ALL      *)
+(*                                           panels                           *)
+(*     Bit  4 BtnBlock     HMI-&gt;PLC          active panel toggles block flag  *)
+(*     Bit  5 BlockGate    PLC-&gt;HMI          block button enabled (password   *)
+(*                                           gate)                            *)
+(*     Bit  6 PressBlocked  HMI-&gt;PLC          pressed take-over while blocked *)
+(*                                            (1-shot)                        *)
+(*     Bit  7 IsBlocked    PLC-&gt;HMI          broadcast - take-over is         *)
+(*                                           currently blocked                *)
+(*     Bit  8 BtnMirror    HMI-&gt;PLC          toggle mirror/orientation        *)
+(*                                           (momentary)                      *)
+(*     Bit  9 MirrorState  PLC-&gt;HMI          current mirror state of this     *)
+(*                                           panel                            *)
+(*     Bit 10-14 UserBits  both              free bits - used by              *)
+(*                                           SwitchScreenMemmory FB           *)
+(*     Bit 15 Alive        HMI-&gt;PLC          heartbeat, set every 0.5s by     *)
+(*                                           Script 4                         *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   4. INPUTS                                                                *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*     Reset                   : BOOL - rising edge clears entire panel list  *)
+(*     DefaultIpNo1            : STRING - this IP address always at array     *)
+(*                               position 1                                   *)
+(*     DefaultIpNo2            : STRING - this IP address always at array     *)
+(*                               position 2                                   *)
+(*     DefaultIpNo3            : STRING - this IP address always at array     *)
+(*                               position 3                                   *)
+(*     DefaultIpNo4            : STRING - this IP address always at array     *)
+(*                               position 4                                   *)
+(*     PassWordActive          : BOOL - enables block button on active panel  *)
+(*     AutoSwitchTime          : INT - take-over countdown in seconds         *)
+(*                               (default 5)                                  *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   5. OUTPUTS                                                               *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*     ScreenActive            : INT - index of active panel (0=none)         *)
+(*     WantsControl            : INT - index of panel requesting take-over    *)
+(*     PressedWhileBlocked     : BOOL - 1-shot: take-over pressed while       *)
+(*                               blocked                                      *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   6. PROGRAM SECTIONS (execution order)                                    *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*     Info                    : This documentation - not executed            *)
+(*     ResetData               : Dedup IPs, heartbeat reset, alive counters,  *)
+(*                               remove offline                               *)
+(*     SchermWissel            : Core take-over: countdown, Yes/No, auto      *)
+(*                               take-over                                    *)
+(*     DefaultIpPlace          : Sort panels to fixed positions via DefaultIp *)
+(*                               inputs                                       *)
+(*     PressWhileBlocked       : Set PressedWhileBlocked output for one scan  *)
+(*                               cycle                                        *)
+(*     ReleaseBlocked          : Gate block button via PassWordActive input   *)
+(*     BlockedToOtherScreens   : Broadcast TakeOverIsBlocked to all connected *)
+(*                               panels                                       *)
+(*     SomethingWrong          : Watchdog: stuck bits, BtnYes+BtnNo both high *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   7. TAKE-OVER PROCEDURE                                                   *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* Example: Panel 2 (view-only) wants control from Panel 1 (active).          *)
+(*                                                                            *)
+(*     Step 1              Panel 2           sets BtnWantControl (bit 2)      *)
+(*     Step 2              PLC               ChangeScreen=TRUE,               *)
+(*                                           WantsControl=2,                  *)
+(*                                           Counter=AutoSwitchTime           *)
+(*     Step 3              PLC               OtherScreenWantsControl set on   *)
+(*                                           ALL panels - popup               *)
+(*     Step 4a             Panel 1 YES       Panel 2 becomes active           *)
+(*                                           immediately                      *)
+(*     Step 4b             Panel 1 NO        take-over rejected, all flags    *)
+(*                                           reset                            *)
+(*     Step 4c             No reaction       after countdown Panel 2 becomes  *)
+(*                                           active automatically             *)
+(*                                                                            *)
+(* Step 4c is intentional: unattended active panel -&gt; requesting panel gets   *)
+(* control automatically without anyone going back to the active screen.      *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   8. BLOCK TAKE-OVER                                                       *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* Active panel can block all take-over requests. Password protected.         *)
+(* EMERGENCY feature only - in normal daily operation block is OFF.           *)
+(*                                                                            *)
+(*   - TakeOverIsBlocked (bit 7) set on all connected panels when blocked     *)
+(*   - View-only panels show 'Take over is blocked' warning                   *)
+(*   - PressedWhileBlocked output pulses if panel tries anyway                *)
+(*                                                                            *)
+(* To unblock: physically go to active panel, enter password, press button.   *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   9. SCREEN-ALIVE MONITORING                                               *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*     HMI Script 4        every 500ms       sets bit 15 (ThisScreenIsAlive)  *)
+(*                                           to 1                             *)
+(*     PLC                 every 1s          resets all alive bits (%S6       *)
+(*                                           rising edge)                     *)
+(*     AliveCounter        starts at 150     decrements each scan, resets on  *)
+(*                                           rising edge                      *)
+(*     Timeout             ~1.5 seconds      counter reaches 0 -&gt; panel       *)
+(*                                           removed from list                *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   10. HMI SCRIPTS (Vijeo Designer) - identical on all panels               *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* HMI internal vars (INT): ScreenOnCounter, ScreenNumber, ScreenIsActive     *)
+(* PLC variable in scripts : ScreenChange  (= SwitchScreenInOut array)        *)
+(*                                                                            *)
+(* -- Script 1: Register IP address (periodic 0.5s) --                        *)
+(*     int Count=0;                                                           *)
+(*     String IpAddress=Sys.getInfoString(IP_ADDRESS_1);                      *)
+(*     if (ScreenOnCounter.getIntValue() &gt; 10) {                              *)
+(*       while (Count&lt;4) {                                                    *)
+(*         if (ScreenChange.SwitchScreen[Count].ConnectedScreen               *)
+(*               .getStringValue().compareTo(IpAddress)==0) { return; }       *)
+(*         Count++; }                                                         *)
+(*       Count=0;                                                             *)
+(*       while (Count&lt;4) {                                                    *)
+(*         if (ScreenChange.SwitchScreen[Count].ConnectedScreen               *)
+(*               .getStringValue().compareTo("")==0) {                        *)
+(*       ScreenChange.SwitchScreen[Count].ConnectedScreen.write(IpAddress);   *)
+(*           return; }                                                        *)
+(*         Count++; } }                                                       *)
+(*                                                                            *)
+(* -- Script 2: Find own screen number (periodic 0.1s) --                     *)
+(*     int Cnt=0; String IpAddress=Sys.getInfoString(IP_ADDRESS_1);           *)
+(*     while (Cnt&lt;4) {                                                        *)
+(*       if (ScreenChange.SwitchScreen[Cnt].ConnectedScreen                   *)
+(*             .getStringValue().compareTo(IpAddress)==0)                     *)
+(*         { ScreenChange.ScreenNumber.write(Cnt); }                          *)
+(*       Cnt++; }                                                             *)
+(*                                                                            *)
+(* -- Script 3: Copy active status (periodic 0.1s) --                         *)
+(*     int n=ScreenChange.ScreenNumber.getIntValue();                         *)
+(*     int a=ScreenChange.SwitchScreen[n].ActiveScreen.getIntValue();         *)
+(*     ScreenChange.ScreenIsActive.write(a==1 ? 1 : 0);                       *)
+(*                                                                            *)
+(* -- Script 4: Heartbeat (periodic 0.5s) --                                  *)
+(*     int n=ScreenChange.ScreenNumber.getIntValue();                         *)
+(*     ScreenChange.SwitchScreen[n].buttons.ThisScreenIsAlive.write(1);       *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   11. SCREENISACTIVE - THE UNIVERSAL INTERLOCK                             *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* ScreenIsActive is a local HMI variable set by Script 3.                    *)
+(* Set this as the ENABLE condition on every operator control in Vijeo.       *)
+(* Vijeo automatically greys out and disables controls when = 0.              *)
+(*                                                                            *)
+(*     ALWAYS interlock                      start/stop, setpoints, valve     *)
+(*                                           controls, mode selection         *)
+(*     NEVER interlock                       page navigation, Take over       *)
+(*                                           button, display objects          *)
+(*     OPTIONAL                              alarm reset (your choice per     *)
+(*                                           project)                         *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   12. THIRD-PARTY INTEGRATION - Kongsberg / Praxis / Modbus / OPC          *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* Any system can participate. Only 4 things needed:                          *)
+(*                                                                            *)
+(*     1. REGISTER         once at start     write own ID to                  *)
+(*                                    SwitchScreenInOut[n].ConnectedScreen    *)
+(*     2. POLL             every 100ms       read ActiveScreen: 1=active      *)
+(*                                           (on), 0=view only (off)          *)
+(*     3. HEARTBEAT        every 500ms       write bit 15 of Buttons.Wrd to 1 *)
+(*     4. TAKE-OVER        on request        write bit 2 (BtnWantControl)     *)
+(*                                           once to request                  *)
+(*                                                                            *)
+(* Slot: agree fixed slot with installer OR find first empty slot at startup. *)
+(* Modbus: STRING[16] = 9 holding registers. Ask installer for address map.   *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   13. COMPANION FB: SwitchScreenMemmory                                    *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* See SwitchScreenMemmory FB for per-screen persistent settings.             *)
+(* Uses bits 9-14 of Buttons.Wrd as memory bits per IP address.               *)
+(* Typical use: PS/SB orientation, mirror view, language, local preferences.  *)
+(* Declare MemoryWrd[1..4] OF WORD as RETAIN.                                 *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   14. NOTES FOR FUTURE MAINTAINERS                                         *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*   - Declare SwitchScreenInOut as RETAIN - must survive PLC power cycle     *)
+(*   - AutoSwitchTime=15s typical maritime (bridge unattended scenario)       *)
+(*   - secPuls uses %S6 (1Hz system bit) - no extra timer FB needed           *)
+(*   - IS_PAR_CON guards DefaultIp inputs - unconnected inputs are safe       *)
+(*   - SomethingWrong clears stuck OtherScreenWantsControl after 500 scans    *)
+(*   - First panel auto-becomes active on PLC start (NoScreenHasControl       *)
+(*     logic)                                                                 *)
+(*   - Block is behind password - normal daily use does NOT use block         *)
+(*                                                                            *)
+</STSource>
+		</FBProgram>
+		<FBProgram name="ResetData">
+			<STSource>
+(* copy Input Reset to eBool for egde detection*)
+tmpReset:=Reset;
+
+(* auxiliary bit SameIp , true if there is 2x the same Ip adress in the list *)
+SameIp:=false;
+
+(* Compare all screen IP addresses with each other, see if there are the same IP addresses in the list *)
+for cnt:=1 to 4 do
+	for cnt2:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen&lt;&gt;'' and SwitchScreenInOut[cnt2].ConnectedScreen&lt;&gt;'' and cnt2&gt;cnt then
+			if SwitchScreenInOut[cnt].ConnectedScreen=SwitchScreenInOut[cnt2].ConnectedScreen then
+				SwitchScreenInOut[cnt2].ConnectedScreen:='';
+			end_if;
+		end_if;
+	end_for;
+end_for;
+
+(* put all Alive toggle bits low *)
+if re(secPuls) then
+	for cnt:=1 to 4 do
+		SwitchScreenInOut[cnt].Buttons.ThisScreenIsAlive:=0;
+	end_for;
+end_if;
+
+(* check if a screen does not answer anymore *)
+LostAScreen:=false;
+lostScreenNbr:=0;
+for cnt:=1 to 4 do 
+
+	ScreenIsAlive[cnt]:=SwitchScreenInOut[cnt].Buttons.ThisScreenIsAlive;
+	
+	if re(ScreenIsAlive[cnt]) then
+		AliveCounter[cnt]:=150;
+	end_if;
+
+	if AliveCounter[cnt]&gt;0 then
+		AliveCounter[cnt]:=AliveCounter[cnt]-1;
+	end_if;
+
+	if AliveCounter[cnt]=0 and PreAliveCounter[cnt]&gt;0 then	
+		SwitchScreenInOut[cnt].ActiveScreen:=0;
+		LostAScreen:=true;
+		lostScreenNbr:=cnt;
+	end_if;
+
+	PreAliveCounter[cnt]:=AliveCounter[cnt];
+
+end_for;
+
+if LostAScreen and lostScreenNbr&gt;0 then
+	SwitchScreenInOut[lostScreenNbr].ConnectedScreen:='';
+	SwitchScreenInOut[lostScreenNbr].Buttons.Wrd:=0;
+end_if;
+
+(* clear list with Ip Adressen *)
+if re(tmpReset) or SameIp  then
+	for cnt:=1 to 4 do
+		SwitchScreenInOut[cnt].ConnectedScreen:='';
+		SwitchScreenInOut[lostScreenNbr].Buttons.Wrd:=0;
+	end_for;
+end_if;
+
+(* For debuggen *)
+temp1:=AliveCounter[1]; temp5:=ScreenIsAlive[1];temp9:=SwitchScreenInOut[1].Buttons.ThisScreenIsAlive;
+temp2:=AliveCounter[2]; temp6:=ScreenIsAlive[2];temp10:=SwitchScreenInOut[2].Buttons.ThisScreenIsAlive;
+temp3:=AliveCounter[3]; temp7:=ScreenIsAlive[3];temp11:=SwitchScreenInOut[3].Buttons.ThisScreenIsAlive;
+temp4:=AliveCounter[4]; temp8:=ScreenIsAlive[4];temp12:=SwitchScreenInOut[4].Buttons.ThisScreenIsAlive;
+</STSource>
+		</FBProgram>
+		<FBProgram name="SchermWissel">
+			<STSource>
+(* if there is a value in input AutoSwitchTime, use that value, else use a default value *)
+
+if IS_PAR_CON (INP := AutoSwitchTime) then
+	SwitchTime:=AutoSwitchTime;
+else
+	SwitchTime:=5;
+End_if;
+
+(* auxiliary bit secPuls for egde detection *)
+secPuls:=%s6;
+
+(*------------------------------------------------------------------------------------------------------*)
+NoScreenHasControl:=True;
+for ScreenNumber:=1 to 4 do
+
+       (* check which HMI is now in control *)
+	if SwitchScreenInOut[ScreenNumber].ActiveScreen=1 then
+		ScreenActive:=ScreenNumber;
+		NoScreenHasControl:=False;
+	end_if;
+
+	(* check whether the TakeOver button is pressed somewhere*) 
+  	if SwitchScreenInOut[ScreenNumber].Buttons.BtnWantControl=1 and SwitchCounter&lt;1 then
+		ChangeScreen:=true;
+		SwitchCounter:=SwitchTime;
+		WantsControl:=ScreenNumber;                                 (*Number HMI that wants Control*)
+		SwitchScreenInOut[ScreenNumber].Buttons.BtnWantControl:=false;
+	end_if;
+end_for;
+
+(*------------------------------------------------------------------------------------------------------*)
+(* No Hmi screen Active, so make HMI one active *)
+if NoScreenHasControl=True then
+	for ScreenNumber:=1 to 4 do
+		if SwitchScreenInOut[ScreenNumber].ConnectedScreen&lt;&gt;'' then
+			SwitchScreenInOut[ScreenNumber].ActiveScreen:=1;
+			exit;
+		end_if;
+	end_for;
+end_if;
+
+(*------------------------------------------------------------------------------------------------------*)
+(* They pushed NO, taking over is not allowed  *)
+if ScreenActive&gt;0 then
+	if SwitchScreenInOut[ScreenActive].Buttons.BtnNo and ScreenActive&gt;0 then
+	
+		SwitchScreenInOut[ScreenActive].SwitchScreenCnt:=0;
+		SwitchScreenInOut[WantsControl].SwitchScreenCnt:=0;
+	
+		ChangeScreen:=false;
+		SwitchScreenInOut[ScreenActive].Buttons.OtherScreenWantsControl:=False;
+		SwitchScreenInOut[ScreenActive].Buttons.BtnNo:=false;
+		SwitchScreenInOut[ScreenActive].Buttons.BtnYes:=false;
+		SwitchCounter:=0;
+	end_if;
+end_if;
+
+(*------------------------------------------------------------------------------------------------------*)
+(* they pushed Yes , Take over allowed *)
+if ScreenActive&gt;0 then
+	if SwitchScreenInOut[ScreenActive].Buttons.BtnYes then
+		(*make all screens not active*)
+		for ScreenNumber:=1 to 4 do
+			SwitchScreenInOut[ScreenNumber].ActiveScreen:=0;
+		end_for;
+
+		(* make new screen active*)
+		SwitchScreenInOut[WantsControl].ActiveScreen:=1;
+
+
+		(* reset other screens *)
+		SwitchScreenInOut[ScreenActive].SwitchScreenCnt:=0;
+		SwitchScreenInOut[WantsControl].SwitchScreenCnt:=0;
+	
+		ChangeScreen:=false;
+		SwitchScreenInOut[ScreenActive].Buttons.OtherScreenWantsControl:=False;
+		SwitchScreenInOut[ScreenActive].Buttons.BtnNo:=false;
+		SwitchScreenInOut[ScreenActive].Buttons.BtnYes:=false;
+		SwitchCounter:=0;
+	end_if;
+end_if;
+
+(*------------------------------------------------------------------------------------------------------*)
+(* Time is over, and they not pushed NO, so Take Over is allowed*)
+if ChangeScreen and SwitchCounter&lt;1 then
+	(*make all screens not active*)
+	for ScreenNumber:=1 to 4 do
+		SwitchScreenInOut[ScreenNumber].ActiveScreen:=0;
+	end_for;
+
+	(* make new screen active *)
+	SwitchScreenInOut[WantsControl].ActiveScreen:=1;
+
+
+	(* reset other screens *)
+	SwitchScreenInOut[ScreenActive].SwitchScreenCnt:=0;
+	SwitchScreenInOut[WantsControl].SwitchScreenCnt:=0;
+	
+	ChangeScreen:=false;
+	SwitchScreenInOut[ScreenActive].Buttons.OtherScreenWantsControl:=False;
+	SwitchScreenInOut[ScreenActive].Buttons.BtnNo:=false;
+	SwitchScreenInOut[ScreenActive].Buttons.BtnYes:=false;
+	SwitchCounter:=0;
+end_if;
+
+(*-------------------------------------------------------------------------------------------------------*)
+(* reset all counters *)
+
+for ScreenNumber:=1 to 4 do
+	SwitchScreenInOut[ScreenNumber].SwitchScreenCnt:=0;
+end_for;
+
+(*------------------------------------------------------------------------------------------------------*)
+if ChangeScreen and ScreenActive&gt;0 and WantsControl&gt;0 then
+	(* show allow to take over question on active screen*)
+ 	SwitchScreenInOut[ScreenActive].Buttons.OtherScreenWantsControl:=true;
+
+	(* show on active screen, and the screen that wants to take over the countdown counter *)
+
+	SwitchScreenInOut[WantsControl].SwitchScreenCnt:=SwitchCounter;	
+	SwitchScreenInOut[ScreenActive].SwitchScreenCnt:=SwitchCounter;
+
+end_if;
+
+(*------------------------------------------------------------------------------------------------------*)
+(* dec switch countdown counter *)
+if SwitchCounter&gt;0 then
+	if re(secpuls) then
+		SwitchCounter:=SwitchCounter-1;
+	end_if;
+end_if;
+
+
+for ScreenNumber:=1 to 4 do
+	If ChangeScreen=false and SwitchScreenInOut[ScreenNumber].SwitchScreenCnt&lt;&gt;0 then
+		SwitchScreenInOut[ScreenNumber].SwitchScreenCnt:=0;
+	end_if;
+end_for;
+</STSource>
+		</FBProgram>
+		<FBProgram name="DefaultIpPlace">
+			<STSource>
+if IS_PAR_CON (INP := DefaultIpNo1) then
+
+	DefaultIp1Inlist:=false;
+	Found1AtPlace:=0;
+
+	(* Compare all screen IP addresses with DefaultIp1 *)
+	for cnt:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen=DefaultIpNo1  then
+			DefaultIp1Inlist:=true;
+			Found1AtPlace:=Cnt;	
+		end_if;
+	end_for;
+	if DefaultIp1Inlist then
+		if Found1AtPlace&lt;&gt;1 then (* not on the wright place, so switch them*)
+			tmpSwitchScreenInOut:=SwitchScreenInOut[1]; (* copy info from 1 to a temp place*)
+			SwitchScreenInOut[1]:=SwitchScreenInOut[Found1AtPlace]; (* copy found screen to the right place*)
+			SwitchScreenInOut[Found1AtPlace]:=tmpSwitchScreenInOut;
+		end_if;
+	end_if;
+end_if;
+
+
+if IS_PAR_CON (INP := DefaultIpNo2) then
+
+	DefaultIp2Inlist:=false;
+	Found2AtPlace:=0;
+
+	(* Compare all screen IP addresses with DefaultIp1 *)
+	for cnt:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen=DefaultIpNo2  then
+			DefaultIp2Inlist:=true;
+			Found2AtPlace:=Cnt;	
+		end_if;
+	end_for;
+	if DefaultIp2Inlist then
+		if Found2AtPlace&lt;&gt;2 then (* not on the wright place, so switch them*)
+			tmpSwitchScreenInOut:=SwitchScreenInOut[2]; (* copy info from 1 to a temp place*)
+			SwitchScreenInOut[2]:=SwitchScreenInOut[Found2AtPlace]; (* copy found screen to the right place*)
+			SwitchScreenInOut[Found2AtPlace]:=tmpSwitchScreenInOut;
+		end_if;
+	end_if;
+end_if;
+
+
+if IS_PAR_CON (INP := DefaultIpNo3) then
+
+	DefaultIp3Inlist:=false;
+	Found3AtPlace:=0;
+
+	(* Compare all screen IP addresses with DefaultIp1 *)
+	for cnt:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen=DefaultIpNo3 then
+			DefaultIp3Inlist:=true;	
+			Found3AtPlace:=Cnt;
+		end_if;
+	end_for;
+	if DefaultIp3Inlist then
+		if Found3AtPlace&lt;&gt;3 then (* not on the right place, so switch them*)
+			tmpSwitchScreenInOut:=SwitchScreenInOut[3]; (* copy info from 1 to a temp place*)
+			SwitchScreenInOut[3]:=SwitchScreenInOut[Found3AtPlace]; (* copy found screen to the right place*)
+			SwitchScreenInOut[Found3AtPlace]:=tmpSwitchScreenInOut;
+		end_if;
+	end_if;
+end_if;
+
+
+if IS_PAR_CON (INP := DefaultIpNo4) then
+
+	DefaultIp4Inlist:=false;
+	Found4AtPlace:=0;
+
+	(* Compare all screen IP addresses with DefaultIp1 *)
+	for cnt:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen=DefaultIpNo4  then
+			DefaultIp4Inlist:=true;
+			Found4AtPlace:=Cnt;	
+		end_if;
+	end_for;
+	if DefaultIp4Inlist then
+		if Found4AtPlace&lt;&gt;4 then (* not on the wright place, so switch them*)
+			tmpSwitchScreenInOut:=SwitchScreenInOut[4]; (* copy info from 1 to a temp place*)
+			SwitchScreenInOut[4]:=SwitchScreenInOut[Found4AtPlace]; (* copy found screen to the right place*)
+			SwitchScreenInOut[Found4AtPlace]:=tmpSwitchScreenInOut;
+		end_if;
+	end_if;
+end_if;
+
+</STSource>
+		</FBProgram>
+		<FBProgram name="PressWhileBlocked">
+			<STSource>
+
+PressedWhileBlocked:=false;
+
+for ScreenNumber:=1 to 4 do
+	if SwitchScreenInOut[ScreenNumber].Buttons.pressedTakeOverNotAllowedWhileBlocked=1 then
+		PressedWhileBlocked:=true;
+	end_if;
+end_for;
+
+
+</STSource>
+		</FBProgram>
+		<FBProgram name="ReleaseBlocked">
+			<STSource>
+
+SwitchScreenInOut[ScreenActive].Buttons.BlockBtnTakeOverNotAllowed:=not PassWordActive;
+</STSource>
+		</FBProgram>
+		<FBProgram name="BlockedToOtherScreens">
+			<STSource>
+	for ScreenNumber:=1 to 4 do
+		if SwitchScreenInOut[ScreenNumber].ConnectedScreen&lt;&gt;'' then
+			SwitchScreenInOut[ScreenNumber].Buttons.TakeOverIsBlocked:=false;
+		end_if;
+	end_for;
+
+
+
+if ScreenActive&gt;0 then
+	if SwitchScreenInOut[ScreenActive].Buttons.BtnTakeOverNotAllowed=1 then
+
+		for ScreenNumber:=1 to 4 do
+			if SwitchScreenInOut[ScreenNumber].ConnectedScreen&lt;&gt;'' then
+				SwitchScreenInOut[ScreenNumber].Buttons.TakeOverIsBlocked:=true;
+			end_if;
+		end_for;
+
+	end_if;
+end_if;
+</STSource>
+		</FBProgram>
+		<FBProgram name="SomethingWrong">
+			<STSource>
+(* Reset All!!! wen something is wrong *)
+
+
+(* BtnYes and BtnNo both active?!? *)
+for ScreenNumber:=1 to 4 do
+	if SwitchScreenInOut[ScreenNumber].Buttons.BtnNo and SwitchScreenInOut[ScreenNumber].Buttons.BtnYes then
+		SwitchScreenInOut[ScreenNumber].Buttons.Wrd:=0;
+	end_if;
+end_for;
+
+
+(*sometimes bit stays 1 OtherScreenWantsControl??? *)
+for ScreenNumber:=1 to 4 do
+	if SwitchScreenInOut[ScreenNumber].Buttons.OtherScreenWantsControl=1 then
+ 		otherScreenWantsControl[ScreenNumber]:=True;
+	else
+ 		otherScreenWantsControl[ScreenNumber]:=False;
+	end_if;
+
+	if otherScreenWantsControl[ScreenNumber]=True then
+		otherscreenControlCounter[ScreenNumber]:=otherscreenControlCounter[ScreenNumber]+1;
+	else
+		otherscreenControlCounter[ScreenNumber]:=0;
+	end_if;
+
+	if otherscreenControlCounter[ScreenNumber]&gt;500 then
+		SwitchScreenInOut[ScreenNumber].Buttons.OtherScreenWantsControl:=false;
+		otherscreenControlCounter[ScreenNumber]:=0;
+	end_if;
+end_for;
+
+dummy:=otherScreenWantsControl[1];
+dummy:=otherScreenWantsControl[2];
+dummy:=otherScreenWantsControl[3];
+dummy:=otherScreenWantsControl[4];
+
+dummy0:=otherscreenControlCounter[1];
+dummy1:=otherscreenControlCounter[2];
+dummy2:=otherscreenControlCounter[3];
+dummy3:=otherscreenControlCounter[4];
+</STSource>
+		</FBProgram>
+	</FBSource>
+	<DDTSource DDTName="ScreenSwitch" version="0.04" dateTime="dt#2023-12-01-13:30:46">
+		<attribute name="TypeSignatureCheckSumString" value="12BB"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="6"></attribute>
+		<structure>
+			<variables name="ConnectedScreen" typeName="string[16]"></variables>
+			<variables name="ActiveScreen" typeName="INT"></variables>
+			<variables name="SwitchScreenCnt" typeName="INT"></variables>
+			<variables name="Buttons" typeName="ScreenSwitchButtons"></variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="ScreenSwitchButtons" version="0.07" dateTime="dt#2023-12-01-13:30:46">
+		<comment>Used in het switch between more screen program</comment>
+		<attribute name="TypeSignatureCheckSumString" value="EA71"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="2"></attribute>
+		<structure>
+			<variables name="Wrd" typeName="WORD"></variables>
+			<variables name="BtnYes" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="BtnNo" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="BtnWantControl" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="OtherScreenWantsControl" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="pressedTakeOverNotAllowedWhileBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="TakeOverIsBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="btnMirrorScreen" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="mirrorScreen" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="res10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="res11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="res12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="res13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="res14" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="BtnTakeOverNotAllowed" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="BlockBtnTakeOverNotAllowed" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="ThisScreenIsAlive" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+		</structure>
+	</DDTSource>
+</FBExchangeFile>

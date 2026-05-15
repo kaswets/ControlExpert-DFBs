@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-17:1:3" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="SwitchScreenMemmory" version="0.13" dateTime="dt#2026-05-13-15:08:13">
+		<attribute name="TypeCodeCheckSumString" value="5989"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="8E56"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="35"></attribute>
+		<inputParameters>
+			<variables name="DefaultIpNo1" typeName="STRING">
+				<attribute name="PositionPin" value="3"></attribute>
+			</variables>
+			<variables name="DefaultIpNo2" typeName="STRING">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="DefaultIpNo3" typeName="STRING">
+				<attribute name="PositionPin" value="4"></attribute>
+			</variables>
+			<variables name="DefaultIpNo4" typeName="STRING">
+				<attribute name="PositionPin" value="5"></attribute>
+			</variables>
+		</inputParameters>
+		<inOutParameters>
+			<variables name="SwitchScreenInOut" typeName="ARRAY[1..4] OF ScreenSwitch">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="MemoryWrd" typeName="ARRAY[1..4] OF WORD">
+				<attribute name="PositionPin" value="6"></attribute>
+			</variables>
+		</inOutParameters>
+		<privateLocalVariables>
+			<variables name="ScreenNumber" typeName="INT"></variables>
+			<variables name="DefaultIp1Inlist" typeName="EBOOL"></variables>
+			<variables name="cnt" typeName="INT"></variables>
+			<variables name="DefaultIp2Inlist" typeName="EBOOL"></variables>
+			<variables name="DefaultIp3Inlist" typeName="EBOOL"></variables>
+			<variables name="DefaultIp4Inlist" typeName="EBOOL"></variables>
+			<variables name="TON_ip1" typeName="TON"></variables>
+			<variables name="TON_ip2" typeName="TON"></variables>
+			<variables name="TON_ip3" typeName="TON"></variables>
+			<variables name="TON_ip4" typeName="TON"></variables>
+		</privateLocalVariables>
+		<FBProgram name="Info">
+			<STSource>(* ************************************************************************** *)
+(* *********  SwitchScreenMemmory  -  Function Block Documentation  ********* *)
+(* ************************************************************************** *)
+(*                                                                            *)
+(*   FB Name                   : SwitchScreenMemmory                          *)
+(*   Version                   : 0.11                                         *)
+(*   Platform                  : Schneider Control Expert V14.1               *)
+(*   Author                    : ASW (2023-12-01)                             *)
+(*   Companion                 : SwitchScreens FB (required)                  *)
+(*                                                                            *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   1. PURPOSE                                                               *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* Companion block to SwitchScreens. Solves one specific problem:             *)
+(* All panels run the same application, but some settings are specific        *)
+(* to ONE physical panel location (e.g. PS vs SB orientation).                *)
+(*                                                                            *)
+(* Settings must be stored in the PLC (not HMI) because the HMI loses         *)
+(* its state on reboot. And they must be tied to the IP ADDRESS, not the      *)
+(* array slot, because boot order may vary between restarts.                  *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   2. HOW IT WORKS                                                          *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* Bits 9-14 of ScreenSwitchButtons.Wrd are the memory bits.                  *)
+(* This FB maintains a shadow copy in MemoryWrd[1..4] per IP address.         *)
+(*                                                                            *)
+(* SAVE: when panel has been online for 2.5s (TON_ipN.Q = TRUE):              *)
+(*     MemoryWrd[n] := Buttons.Wrd AND 2#0111111000000000                     *)
+(*   mask selects bits 9-14 only, excludes bit 15=alive and bits 0-8          *)
+(*                                                                            *)
+(* RESTORE: on rising edge of DefaultIpNInlist (panel comes back online):     *)
+(*     Buttons.Wrd := Buttons.Wrd OR MemoryWrd[n]                             *)
+(*   OR preserves existing bits, only restores the saved memory bits          *)
+(*                                                                            *)
+(* The 2.5s TON delay is intentional: ensures RESTORE has completed before    *)
+(* SAVE happens. Without it, save captures zeros right after connect and      *)
+(* overwrites the stored memory with zeros.                                   *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   3. INTERFACE                                                             *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(* Inputs:                                                                    *)
+(*     DefaultIpNo1            : STRING - IP of panel mapped to MemoryWrd[1]  *)
+(*     DefaultIpNo2            : STRING - IP of panel mapped to MemoryWrd[2]  *)
+(*     DefaultIpNo3            : STRING - IP of panel mapped to MemoryWrd[3]  *)
+(*     DefaultIpNo4            : STRING - IP of panel mapped to MemoryWrd[4]  *)
+(*                                                                            *)
+(* InOut:                                                                     *)
+(*     SwitchScreenInOut[1..4] : ARRAY OF ScreenSwitch - SAME as              *)
+(*                               SwitchScreens FB                             *)
+(*     MemoryWrd[1..4]         : ARRAY OF WORD - declare as RETAIN!           *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   4. PROGRAM SECTIONS                                                      *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*     Info                    : This documentation                           *)
+(*     ReadMirrorButton        : Toggle MirrorScreen (bit 9) on               *)
+(*                               BtnMirrorScreen (bit 8)                      *)
+(*     DefaultScreenOnline     : Save/restore memory bits per IP address      *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   5. MIRROR TOGGLE LOGIC                                                   *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*     BtnMirrorScreen     bit 8             momentary button press in HMI    *)
+(*     MirrorScreen        bit 9             latched state (e.g. PS=0, SB=1)  *)
+(*                                                                            *)
+(* When BtnMirrorScreen is pressed:                                           *)
+(*     MirrorScreen    := NOT MirrorScreen   ( toggle )                       *)
+(*     BtnMirrorScreen := FALSE              ( clear immediately )            *)
+(*                                                                            *)
+(* MirrorScreen is in bits 9-14 so it is automatically saved and restored.    *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   6. AVAILABLE MEMORY BITS                                                 *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*     Bit  9  MirrorScreen  [in use]          screen orientation PS/SB       *)
+(*     Bit 10  res10       [free]            available for custom per-screen  *)
+(*                                           setting                          *)
+(*     Bit 11  res11       [free]            available for custom per-screen  *)
+(*                                           setting                          *)
+(*     Bit 12  res12       [free]            available for custom per-screen  *)
+(*                                           setting                          *)
+(*     Bit 13  res13       [free]            available for custom per-screen  *)
+(*                                           setting                          *)
+(*     Bit 14  res14       [free]            available for custom per-screen  *)
+(*                                           setting                          *)
+(*                                                                            *)
+(*   - To use a free bit: add button in HMI + display logic. No PLC changes   *)
+(*     needed.                                                                *)
+(*   - The bit is automatically saved to MemoryWrd and restored on reconnect. *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   7. PRACTICAL EXAMPLE - PS/SB ORIENTATION                                 *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*     192.168.4.160       DefaultIpNo1-&gt;MemoryWrd[1]  bit 9=0 -&gt; PS (port)   *)
+(*                                                     view                   *)
+(*     192.168.4.161       DefaultIpNo2-&gt;MemoryWrd[2]  bit 9=1 -&gt; SB          *)
+(*                                                     (starboard) view       *)
+(*                                                                            *)
+(* Panel reboots -&gt; on reconnect MemoryWrd OR'd back into Buttons.Wrd         *)
+(* -&gt; panel immediately shows correct orientation, no operator action needed. *)
+(*                                                                            *)
+(* -------------------------------------------------------------------------- *)
+(*   8. IMPORTANT NOTES                                                       *)
+(* -------------------------------------------------------------------------- *)
+(*                                                                            *)
+(*   - Declare MemoryWrd as RETAIN - must survive PLC power cycle             *)
+(*   - DefaultIp inputs must exactly match those in SwitchScreens FB          *)
+(*   - Both FBs share the same SwitchScreenInOut array variable               *)
+(*   - Call order: SwitchScreens first, then SwitchScreenMemmory              *)
+(*   - IS_PAR_CON guards DefaultIp inputs - unconnected inputs are safe       *)
+(*                                                                            *)
+
+
+(* Used in :
+
+	190117 FUJIAN DN455 01&amp;02
+	060000 VAMO NACC NEWYORKER 05034
+
+	250081 NACC XL288 &amp; NACC XL289
+*)
+</STSource>
+		</FBProgram>
+		<FBProgram name="ReadMirrorButton">
+			<STSource>for ScreenNumber:=1 to 4 do
+	(* check whether the Mirror button is pressed somewhere*) 
+  	if SwitchScreenInOut[ScreenNumber].Buttons.BtnMirrorScreen=1 then
+		if SwitchScreenInOut[ScreenNumber].Buttons.MirrorScreen=false then
+			SwitchScreenInOut[ScreenNumber].Buttons.MirrorScreen:=True;
+		else
+			SwitchScreenInOut[ScreenNumber].Buttons.MirrorScreen:=False;
+		end_if;
+		
+		SwitchScreenInOut[ScreenNumber].Buttons.BtnMirrorScreen:=false;
+
+	end_if;
+end_for;
+</STSource>
+		</FBProgram>
+		<FBProgram name="DefaultScreenOnline">
+			<STSource>if IS_PAR_CON (INP := DefaultIpNo1) then
+
+	DefaultIp1Inlist:=false;
+
+	(* Compare all screen IP addresses with DefaultIp1 *)
+	for cnt:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen=DefaultIpNo1  then
+			DefaultIp1Inlist:=true;
+		end_if;
+	end_for;
+end_if;
+
+
+if IS_PAR_CON (INP := DefaultIpNo2) then
+
+	DefaultIp2Inlist:=false;
+
+	(* Compare all screen IP addresses with DefaultIp1 *)
+	for cnt:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen=DefaultIpNo2  then
+			DefaultIp2Inlist:=true;
+		end_if;
+	end_for;
+end_if;
+
+
+if IS_PAR_CON (INP := DefaultIpNo3) then
+
+	DefaultIp3Inlist:=false;
+
+	(* Compare all screen IP addresses with DefaultIp1 *)
+	for cnt:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen=DefaultIpNo3 then
+			DefaultIp3Inlist:=true;	
+		end_if;
+	end_for;
+end_if;
+
+
+if IS_PAR_CON (INP := DefaultIpNo4) then
+
+	DefaultIp4Inlist:=false;
+
+	(* Compare all screen IP addresses with DefaultIp1 *)
+	for cnt:=1 to 4 do
+		if SwitchScreenInOut[cnt].ConnectedScreen=DefaultIpNo4  then
+			DefaultIp4Inlist:=true;
+	
+		end_if;
+	end_for;
+end_if;
+
+(* als het scherm even in de lucht is, bitjes overnemen in een extra woord	*)
+(* dit bitje is de status of het huidige scherm normaal of gespiegeld is	*)
+
+TON_ip1 (IN := DefaultIp1Inlist, PT := T#2500ms);
+if TON_ip1.q then
+	MemoryWrd[1]:=SwitchScreenInOut[1].Buttons.Wrd and 2#0111111000000000;
+end_if;
+
+TON_ip2 (IN := DefaultIp2Inlist, PT := T#2500ms);
+if TON_ip2.q then
+	MemoryWrd[2]:=SwitchScreenInOut[2].Buttons.Wrd and 2#0111111000000000;
+end_if;
+
+TON_ip3 (IN := DefaultIp3Inlist, PT := T#2500ms);
+if TON_ip3.q then
+	MemoryWrd[3]:=SwitchScreenInOut[3].Buttons.Wrd and 2#0111111000000000;
+end_if;
+
+TON_ip4 (IN := DefaultIp4Inlist, PT := T#2500ms);
+if TON_ip4.q then
+	MemoryWrd[4]:=SwitchScreenInOut[4].Buttons.Wrd and 2#0111111000000000;
+end_if;
+
+
+(* als een scherm online komt, de memory bitjes terug kopieren..*)
+
+If re(DefaultIp1Inlist) then 
+SwitchScreenInOut[1].Buttons.Wrd:=SwitchScreenInOut[1].Buttons.wrd or MemoryWrd[1];
+end_if;
+
+
+If re(DefaultIp2Inlist) then 
+SwitchScreenInOut[2].Buttons.Wrd:=SwitchScreenInOut[2].Buttons.wrd or MemoryWrd[2];
+end_if;
+
+
+If re(DefaultIp3Inlist) then 
+SwitchScreenInOut[3].Buttons.Wrd:=SwitchScreenInOut[3].Buttons.wrd or MemoryWrd[3];
+end_if;
+
+
+If re(DefaultIp4Inlist) then 
+SwitchScreenInOut[4].Buttons.Wrd:=SwitchScreenInOut[4].Buttons.wrd or MemoryWrd[4];
+end_if;
+</STSource>
+		</FBProgram>
+	</FBSource>
+	<DDTSource DDTName="ScreenSwitch" version="0.04" dateTime="dt#2023-12-01-13:30:46">
+		<attribute name="TypeSignatureCheckSumString" value="12BB"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="6"></attribute>
+		<structure>
+			<variables name="ConnectedScreen" typeName="string[16]"></variables>
+			<variables name="ActiveScreen" typeName="INT"></variables>
+			<variables name="SwitchScreenCnt" typeName="INT"></variables>
+			<variables name="Buttons" typeName="ScreenSwitchButtons"></variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="ScreenSwitchButtons" version="0.07" dateTime="dt#2023-12-01-13:30:46">
+		<comment>Used in het switch between more screen program</comment>
+		<attribute name="TypeSignatureCheckSumString" value="EA71"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="2"></attribute>
+		<structure>
+			<variables name="Wrd" typeName="WORD"></variables>
+			<variables name="BtnYes" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="BtnNo" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="BtnWantControl" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="OtherScreenWantsControl" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="pressedTakeOverNotAllowedWhileBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="TakeOverIsBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="btnMirrorScreen" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="mirrorScreen" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="res10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="res11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="res12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="res13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="res14" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="BtnTakeOverNotAllowed" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="BlockBtnTakeOverNotAllowed" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="ThisScreenIsAlive" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+		</structure>
+	</DDTSource>
+</FBExchangeFile>
