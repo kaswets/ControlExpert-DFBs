@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-21:42:52" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="CommunicationAerzen" version="0.53" dateTime="dt#2026-05-04-14:58:37">
+		<comment>Functionblock for communication with Aerzen  ( Aertronic en Weg VFD)</comment>
+		<attribute name="TypeCodeCheckSumString" value="9D8E"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="5295"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="19"></attribute>
+		<inputParameters>
+			<variables name="Adress_Aertronic" typeName="string[40]">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="Adress_Weg" typeName="string[40]">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="run" typeName="BOOL">
+				<attribute name="PositionPin" value="4"></attribute>
+			</variables>
+			<variables name="WantedRPM" typeName="INT">
+				<attribute name="PositionPin" value="5"></attribute>
+			</variables>
+		</inputParameters>
+		<outputParameters>
+			<variables name="cntMessage" typeName="INT">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="Active" typeName="BOOL">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="Data" typeName="ARRAY[0..10] OF INT">
+				<attribute name="PositionPin" value="3"></attribute>
+			</variables>
+		</outputParameters>
+		<privateLocalVariables>
+			<variables name="IpAertronic" typeName="ADDM_TYPE"></variables>
+			<variables name="NumberToRead" typeName="INT"></variables>
+			<variables name="ActivitionBitRead" typeName="EBOOL"></variables>
+			<variables name="prevMessage" typeName="INT"></variables>
+			<variables name="ReadDataTable" typeName="ARRAY[0..1] OF INT"></variables>
+			<variables name="ComTableRead" typeName="ARRAY[0..3] OF INT"></variables>
+			<variables name="modbusAdress" typeName="ARRAY[0..10] OF DINT"></variables>
+			<variables name="resetReadVar" typeName="BOOL"></variables>
+			<variables name="prevRun" typeName="BOOL"></variables>
+			<variables name="reset_writeVar" typeName="BOOL"></variables>
+			<variables name="TonReset" typeName="TON"></variables>
+			<variables name="ComWithThisIpOkay" typeName="BOOL"></variables>
+			<variables name="PrevData" typeName="ARRAY[0..10] OF INT"></variables>
+			<variables name="t" typeName="INT"></variables>
+			<variables name="SendTable" typeName="ARRAY[0..1] OF INT"></variables>
+			<variables name="ComTableWrite" typeName="ARRAY[0..3] OF INT"></variables>
+			<variables name="ActivitionBitWrite" typeName="EBOOL"></variables>
+			<variables name="preWantedRPM" typeName="INT"></variables>
+			<variables name="EMIS_PARA" typeName="ARRAY[0..2] OF INT"></variables>
+			<variables name="DataReceived" typeName="ARRAY[1..20] OF INT"></variables>
+			<variables name="Manage_para" typeName="ARRAY[0..3] OF INT"></variables>
+			<variables name="IpWeg" typeName="ADDM_TYPE"></variables>
+			<variables name="uit" typeName="EBOOL"></variables>
+			<variables name="activeWriteSingle" typeName="EBOOL"></variables>
+			<variables name="puls" typeName="EBOOL"></variables>
+			<variables name="testSingle" typeName="BOOL"></variables>
+			<variables name="MODBUS_Shift_Adres" typeName="MODBUS_Shift"></variables>
+			<variables name="MODBUS_Shift_Data" typeName="MODBUS_Shift"></variables>
+		</privateLocalVariables>
+		<FBProgram name="info">
+			<STSource>(*													*)
+(* Dit functieblok leest een aantal modbusadressen en schrijft 1 adress					*)
+(*													*)
+(* de 580 plc mag 32 modbus verbindingen tegelijk maken.						*)
+(* 													*)
+(*	Dit functie blok gaat er van uit dat alle aerzen machine alles op de zelfde adressen heeft	*)
+(*													*)
+(* in de 580 zou het ook via de DTM browser kunnen , maar dan moet er wel heel veel ingevuld worden, 	*)
+(* vandaar dit function blok. Ale de modbus adressen wijzigen/niet kloppen  hoeft het aleen in dit 	*)
+(* functie block aan gepast te worden...								*)
+
+(* Arjan												*)
+
+</STSource>
+		</FBProgram>
+		<FBProgram name="Adressen">
+			<STSource>
+IpAertronic := ADDM (Adress_Aertronic);
+IpWeg := ADDM (Adress_Weg);
+
+NumberToRead:=4;
+
+
+modbusAdress[0]:=2; 
+modbusAdress[1]:=3; 
+modbusAdress[2]:=10; 
+modbusAdress[3]:=3046;
+modbusAdress[4]:=5000; 
+(*
+modbusAdress[3]:=36; 
+modbusAdress[4]:=34;
+modbusAdress[5]:=34;
+modbusAdress[6]:=34;
+modbusAdress[7]:=34;
+modbusAdress[8]:=34;
+modbusAdress[9]:=34;
+*)
+</STSource>
+		</FBProgram>
+		<FBProgram name="ActiveOrNot">
+			<STSource>active:=Run;
+</STSource>
+		</FBProgram>
+		<FBProgram name="ReadModbus">
+			<STSource>
+(* Informatie uit de WEG freqDrive lezen
+   Dat zou de modbus Read Holding registers [03h}] zijn.
+*)
+
+
+ActivitionBitRead:=ComTableRead[0].0;
+
+ComTableRead[2]:=1; 									(* time out *)
+
+if not(ActivitionBitRead) and run 
+then											(* copy data to the array *)
+	Data[cntMessage]:=0;								(* reset value *)
+	Data[cntMessage]:=ReadDataTable[0];						(* Write new Value *)
+	PrevData[cntMessage]:=ReadDataTable[0];						(* also new value *)
+	
+	cntMessage:=cntMessage+1;
+
+	ComWithThisIpOkay:=true;							(* set a bit for the write var, that the IP give answer *)
+end_if;
+
+if ComTableRead[1]&lt;&gt;0 then
+	ComTableRead[0].2:=true;
+	resetReadVar:=true;
+end_if;
+
+if not ActivitionBitRead and active then
+
+	if cntMessage&gt;NumberToRead then							(* if we read all, make next block active *)
+		cntMessage:=0;
+	end_if;	
+
+	ReadDataTable[0]:=0;
+
+	if cntMessage&lt;&gt;prevMessage or resetReadVar or run&gt;prevRun then			(* check we gonna read a new adress *)
+		READ_VAR (ADR := IpWeg,
+		OBJ := '%MW',
+		NUM :=modbusAdress[cntMessage],
+		NB := 1,
+		GEST := ComTableRead,
+		RECP =&gt; ReadDataTable);
+
+		if resetReadVar then
+			ComTableRead[0]:=0;
+			resetReadVar:=false;
+		end_if;
+
+	end_if;
+
+	if ReadDataTable[0]=0 then							(* if we read nothing? *)
+		ReadDataTable[0]:=PrevData[cntMessage];					(* keep the old value *)
+	end_if;
+
+end_if;
+
+
+</STSource>
+		</FBProgram>
+		<FBProgram name="DataWissen">
+			<STSource>
+if run&lt;prevRun then			(* if run goes to low, clear al data *)
+	cntMessage:=0;
+
+	for t:=0 to NumberToRead do
+		Data[t] := 0;
+	end_for;
+end_if;
+
+
+prevRun:=Run;
+</STSource>
+		</FBProgram>
+		<FBProgram name="ResetWriteVar" activationCondition="uit" logicCondition="standard">
+			<STSource>
+(* if a Write_var stays active to long ! *)
+
+tonReset (IN := ActivitionBitWrite,PT := t#500ms);
+
+if tonReset.q then 
+	reset_writeVar:=true;
+end_if;
+
+
+</STSource>
+		</FBProgram>
+		<FBProgram name="WriteModbus" activationCondition="uit" logicCondition="standard">
+			<STSource>
+SendTable[0]:=WantedRPM;
+
+ActivitionBitWrite:=ComTableWrite[0].0;
+
+ComTableWrite[2]:=25;
+
+(* To stop the Write_var, bit 1 in word 0 must be set and the Write_var must be started again. *)
+
+if reset_writeVar and ActivitionBitWrite then
+	ComTableWrite[0].1:=true;
+end_if;
+
+if ((not ActivitionBitWrite and active and ComWithThisIpOkay) and cntMessage=0 and WantedRPM&lt;&gt;preWantedRPM)
+    or reset_writeVar
+	then
+		WRITE_VAR (ADR := IpAertronic,
+		           OBJ := '%MW',
+		           NUM := 600,			(* %mw600 *)
+		           NB := 1,
+		           EMIS := SendTable,
+		           GEST := ComTableWrite);
+
+
+	reset_writeVar:=false;
+	preWantedRPM:=WantedRPM;
+
+end_if;
+
+	ComWithThisIpOkay:=false;
+</STSource>
+		</FBProgram>
+		<FBProgram name="WriteModbusSingle">
+			<STSource>
+puls:=%s5;
+
+activeWriteSingle:=Manage_para[0].0;
+Manage_para[2]:=20;
+
+
+if Manage_para[3]&lt;&gt;5 then
+	Manage_para[3]:=5;
+end_if;
+
+
+MODBUS_Shift_Adres (In := 5500);
+MODBUS_Shift_Data (In := WantedRPM);
+
+
+EMIS_PARA[0]:=16#0006 or MODBUS_Shift_Adres.out1 ;
+EMIS_PARA[1]:=MODBUS_Shift_Adres.out2 or MODBUS_Shift_Data.out1 ;
+EMIS_PARA[2]:=MODBUS_Shift_Data.out2 ;
+
+if Not activeWriteSingle and re(puls) then
+
+testSingle:=testSingle xor 1;
+
+
+	DATA_EXCH (ADR := IpAertronic,
+	           TYP := 1,
+	           EMIS := EMIS_PARA,
+	           GEST := Manage_para,
+	           RECP =&gt; DataReceived);
+
+end_if;
+</STSource>
+		</FBProgram>
+	</FBSource>
+	<FBSource nameOfFBType="MODBUS_Shift" version="0.07" dateTime="dt#2025-11-05-14:18:03">
+		<comment>Byte/word shifting in Modbus communication</comment>
+		<attribute name="TypeCodeCheckSumString" value="DF25"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="F1A0"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="4"></attribute>
+		<inputParameters>
+			<variables name="In" typeName="INT">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inputParameters>
+		<outputParameters>
+			<variables name="out1" typeName="INT">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="out2" typeName="INT">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+		</outputParameters>
+		<FBProgram name="prg">
+			<STSource>
+out1:=In &amp; 2#1111111100000000 ;
+out2:=In &amp; 2#0000000011111111 ;
+</STSource>
+		</FBProgram>
+	</FBSource>
+</FBExchangeFile>
