@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-22:4:45" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="BitCheck" version="0.11" dateTime="dt#2026-05-11-14:17:40">
+		<comment>Function Count how many bits there are 1 in a word</comment>
+		<attribute name="TypeCodeCheckSumString" value="DC0D"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="C978"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="21"></attribute>
+		<inputParameters>
+			<variables name="WrdIn" typeName="WORD">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</inputParameters>
+		<outputParameters>
+			<variables name="ValueOut" typeName="WORD">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="Bit0" typeName="BOOL">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="Bit1" typeName="BOOL">
+				<attribute name="PositionPin" value="3"></attribute>
+			</variables>
+			<variables name="Bit2" typeName="BOOL">
+				<attribute name="PositionPin" value="4"></attribute>
+			</variables>
+			<variables name="Bit3" typeName="BOOL">
+				<attribute name="PositionPin" value="5"></attribute>
+			</variables>
+			<variables name="Bit4" typeName="BOOL">
+				<attribute name="PositionPin" value="6"></attribute>
+			</variables>
+			<variables name="Bit5" typeName="BOOL">
+				<attribute name="PositionPin" value="7"></attribute>
+			</variables>
+			<variables name="Bit6" typeName="BOOL">
+				<attribute name="PositionPin" value="8"></attribute>
+			</variables>
+			<variables name="Bit7" typeName="BOOL">
+				<attribute name="PositionPin" value="9"></attribute>
+			</variables>
+			<variables name="Bit8" typeName="BOOL">
+				<attribute name="PositionPin" value="10"></attribute>
+			</variables>
+			<variables name="Bit9" typeName="BOOL">
+				<attribute name="PositionPin" value="11"></attribute>
+			</variables>
+			<variables name="Bit10" typeName="BOOL">
+				<attribute name="PositionPin" value="12"></attribute>
+			</variables>
+			<variables name="Bit11" typeName="BOOL">
+				<attribute name="PositionPin" value="13"></attribute>
+			</variables>
+			<variables name="Bit12" typeName="BOOL">
+				<attribute name="PositionPin" value="14"></attribute>
+			</variables>
+			<variables name="Bit13" typeName="BOOL">
+				<attribute name="PositionPin" value="15"></attribute>
+			</variables>
+			<variables name="Bit14" typeName="BOOL">
+				<attribute name="PositionPin" value="16"></attribute>
+			</variables>
+			<variables name="Bit15" typeName="BOOL">
+				<attribute name="PositionPin" value="17"></attribute>
+			</variables>
+			<variables name="Even" typeName="BOOL">
+				<attribute name="PositionPin" value="18"></attribute>
+			</variables>
+			<variables name="NumberOffBits" typeName="INT">
+				<attribute name="PositionPin" value="19"></attribute>
+			</variables>
+		</outputParameters>
+		<privateLocalVariables>
+			<variables name="Count" typeName="INT"></variables>
+			<variables name="Temp" typeName="WORD"></variables>
+			<variables name="oldCount" typeName="INT"></variables>
+			<variables name="gelijk" typeName="BOOL"></variables>
+			<variables name="fault" typeName="INT"></variables>
+		</privateLocalVariables>
+		<FBProgram name="info">
+			<STSource>(*
+
+Kijken hoeveel bitjes er hoog zijn in een WRD *)
+</STSource>
+		</FBProgram>
+		<FBProgram name="ProgramBitCheck">
+			<STSource>
+(* copy bits from Word to bools *)
+
+Bit0:=Wrdin.0;
+Bit1:=Wrdin.1;
+Bit2:=Wrdin.2;
+Bit3:=Wrdin.3;
+Bit4:=Wrdin.4;
+Bit5:=Wrdin.5;
+Bit6:=Wrdin.6;
+Bit7:=Wrdin.7;
+Bit8:=Wrdin.8;
+Bit9:=Wrdin.9;
+Bit10:=Wrdin.10;
+Bit11:=Wrdin.11;
+Bit12:=Wrdin.12;
+Bit13:=Wrdin.13;
+Bit14:=Wrdin.14;
+Bit15:=Wrdin.15;
+
+ValueOut:=Wrdin;
+NumberOffBits:=0;
+temp:=WrdIn;
+Count:=0;
+
+while Count&lt;16 do
+	if (temp AND 2#0000000000000001)=1 then
+		NumberOffBits:=NumberOffBits+1;
+	end_if;
+
+	temp := SHR (IN := temp,N := 1);
+
+	Count:=Count+1;
+
+		if (oldCount=Count) then 
+			jmp end; (* gezien dat hij in deze stap blijft hangen? *)
+			fault:=fault+1;
+		end_if;
+
+	oldCount:=Count;
+
+end_while;
+
+
+end:
+
+</STSource>
+		</FBProgram>
+	</FBSource>
+</FBExchangeFile>
