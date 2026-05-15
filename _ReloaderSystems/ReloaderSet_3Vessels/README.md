@@ -15,21 +15,21 @@ The system consists of one **vacuum vessel** on top and two **pressure vessels**
 ### How it works
 
 ```
-    ┌────────────────────────────────────────┐
-    │              Vacuum Vessel             │
-    │  - - - - - - - - - - - - - - - - - -  │ ← filter
-    │         │                │             │
-    │         │ (vent leiding) │             │ ← V12/V22 leiding loopt door tank
-    │         │                │             │   omhoog tot net onder filter
-    └────┬────┴────────────────┴────┬────────┘
-         │V10                  V20  │           ← fill kleppen (cement valt naar beneden)
-        V12                   V22               ← vent kleppen (lucht omhoog, afgezogen)
-         │    │            │    │
-    ┌────▼────▼────┐  ┌────▼────▼────┐
-    │              │  │              │
-    │  Reloader A  │  │  Reloader B  │
-    │              │  │              │
-    └──────────────┘  └──────────────┘
+    ┌─────────────────────────────────────┐
+    │              Vacuum Vessel          │
+    │ - - - - - - - - - - - - - - - - - - │ ← filter
+    │    │                          │     │
+    │    │      (vent leiding)      │     │ ← V12/V22 leiding loopt door tank
+    │    │                          │     │   omhoog tot net onder filter
+    └────┬────┴────────────────┴────┬─────┘
+         │   V10              V20   │          ← fill kleppen (cement valt naar beneden)
+        V12   │                │   V22         ← vent kleppen (lucht omhoog, afgezogen)
+         │    │                │    │
+    ┌────▼────▼────┐      ┌────▼────▼────┐
+    │              │      │              │
+    │  Reloader A  │      │  Reloader B  │
+    │              │      │              │
+    └──────────────┘      └──────────────┘
 ```
 
 1. The **vacuum vessel** continuously sucks cement from the hold — it keeps sucking as long as at least one pressure vessel below has room
