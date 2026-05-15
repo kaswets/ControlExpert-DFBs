@@ -8,13 +8,14 @@
 
 ## Description
 
-Function block that generates a **dynamic, time-based password** for HMI access control.  
+Function block that generates a **dynamic, session-based password** for HMI access control.  
 Developed for Van Aalst Marine & Offshore installations.
 
-Instead of a fixed password, the HMI shows a random **Password ID** each session. The correct password is calculated from that ID using a formula known only to authorised personnel. This means:
+The HMI shows a random **Password ID** each session. To get the correct password, the operator must contact B&T — who apply a formula to the ID and provide the code. This means:
 - The password changes every session
-- Screenshots or notes of a password cannot be reused
-- Three access levels: Operator, Operator 2, and System
+- A code can only be used once — leaving the settings page generates a new ID
+- The operator can never calculate the code themselves
+- B&T always knows when settings access has been requested
 
 ---
 
@@ -28,14 +29,27 @@ Instead of a fixed password, the HMI shows a random **Password ID** each session
 
 ---
 
+## How it works in practice
+
+1. Operator needs access to settings → HMI shows a random **Password ID**
+2. Operator calls B&T and reads out the ID
+3. B&T applies the formula → gives the operator the code
+4. Operator enters the code on the HMI → `SysPWOkay` goes TRUE
+5. Operator makes the changes needed
+6. As soon as the operator leaves the settings page → new random ID is generated → old code is invalid
+
+> 🔒 The formula is not documented here. Contact B&T for service access.
+
+---
+
 ## Interface
 
 ### Inputs
 
 | Name | Type | Description |
 |------|------|-------------|
-| `Maal` | `INT` | Multiplier used in password calculation (`HmiID × Maal`) |
-| `Aantal` | `INT` | Number of characters to extract from the result string |
+| `Maal` | `INT` | Multiplier used in password calculation |
+| `Aantal` | `INT` | Number of characters to extract from the result |
 | `Vanaf` | `INT` | Position from the end of the string to start extracting |
 | `PassWordNormal` | `STRING` | Fixed password for Operator level access |
 | `PassWordExtra` | `STRING` | Fixed password for Operator 2 level access |
@@ -56,23 +70,7 @@ Instead of a fixed password, the HMI shows a random **Password ID** each session
 | `SysPWOkay` | `BOOL` | System password accepted |
 | `OprPWOkay` | `BOOL` | Operator password accepted |
 | `OprPW2Okay` | `BOOL` | Operator 2 password accepted |
-| `ActSysPW` | `STRING` | The current correct system password (for commissioning/service use) |
-
----
-
-## How the dynamic password works
-
-1. On startup (or reset), a random **HmiID** is generated using 6 chained `Random` blocks seeded with PLC system clock values (`%SW18`, `%SW50`, `%SW51`)
-2. The `HmiID` is shown on the HMI
-3. The system calculates: `result = HmiID × Maal`
-4. Converts result to string, then extracts `Aantal` characters starting `Vanaf` positions from the end
-5. This extracted string is the correct system password
-6. The operator enters a password on the HMI → if it matches `ActSysPW`, `SysPWOkay` goes TRUE
-
-**Example** with `Maal=7`, `Aantal=4`, `Vanaf=2`:
-- `HmiID = 12345`
-- `12345 × 7 = 86415`
-- String: `"86415"` → extract 4 chars from position 3 from end → `"6415"`... wait, `Vanaf=2` means starting 2 from end → `"641"` (4 chars from pos 3) — exact result depends on string length
+| `ActSysPW` | `STRING` | The current correct system password — visible in PLC for commissioning use only |
 
 ---
 
@@ -83,7 +81,7 @@ The password resets automatically when:
 - The HMI screen changes (`ScreenIsChanged`)
 - PLC first scan (`%S13`)
 - `hmi.Reset` is set from HMI
-- Operator 2 password exits manual mode (`fe(InManualMode)`)
+- Operator 2 exits manual mode
 - `ResetSpecialPW` rising edge
 
 ---
@@ -93,7 +91,7 @@ The password resets automatically when:
 | Section | Description |
 |---------|-------------|
 | `PasswordProgram` | Main logic — calculates password, checks entries, handles reset |
-| `RandomGenerator` | Generates random HmiID using 6 `Random` blocks + PLC clock XOR |
+| `RandomGenerator` | Generates random HmiID using 6 `Random` blocks seeded with PLC clock and uptime values |
 
 ---
 
@@ -102,7 +100,7 @@ The password resets automatically when:
 | Name | Type | Description |
 |------|------|-------------|
 | `PasswordGenerator` | DFB | Main password block |
-| `Random` | DFB | Helper — generates pseudo-random number 1–10 using `mod((7 × n), 11)` |
+| `Random` | DFB | Helper — pseudo-random number generator (see `_Helpers/Random/`) |
 | `SystemPassWord` | DDT | HMI password exchange struct |
 | `General` | DDT | Shared system struct |
 | `manualWrd` | DDT | Manual control word |
