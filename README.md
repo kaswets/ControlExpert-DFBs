@@ -9,6 +9,7 @@ These blocks are used in real industrial installations — mainly maritime and p
 
 | DFB | Version | Description |
 |-----|---------|-------------|
+| [CommunicationAerzen](./CommunicationAerzen/) | 0.53 | Modbus TCP communication with Aerzen compressors (Aertronic + WEG VFD) |
 | [Emotor](./Emotor/) | 0.84 | Electric motor control with sequenced starting, alarms, and PMS integration |
 | [SwitchScreens](./SwitchScreens/) | 1.47 | Multi-HMI screen control — up to 4 identical Vijeo Designer panels sharing one PLC |
 
@@ -30,11 +31,15 @@ These blocks are used in real industrial installations — mainly maritime and p
 
 ```
 ControlExpert-DFBs/
+├── CommunicationAerzen/
+│   ├── communicationaerzen.xdb ← Import this into Control Expert
+│   └── README.md               ← CommunicationAerzen documentation
 ├── Emotor/
 │   ├── emotor.xdb              ← Import this into Control Expert
 │   └── README.md               ← Emotor documentation
 ├── SwitchScreens/
 │   ├── switchscreens.xdb       ← Import this into Control Expert
+│   ├── switchscreenmemmory.xdb ← Companion block
 │   └── README.md               ← SwitchScreens documentation
 └── README.md                   ← This file
 ```
@@ -46,7 +51,7 @@ ControlExpert-DFBs/
 | | |
 |---|---|
 | **Software** | Schneider Electric Control Expert V14.1 |
-| **PLC hardware** | Tested on BME P58 / BMX P34 series |
+| **PLC hardware** | Tested on BME P58 2040 (M580) / BMX P34 2020 (M340) |
 | **HMI** | Vijeo Designer (for SwitchScreens) |
 | **Languages used** | Structured Text (ST) + Ladder (LD) |
 
