@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-22:14:21" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="LookForBitChange" version="0.09" dateTime="dt#2022-09-01-13:53:24">
+		<attribute name="TypeCodeCheckSumString" value="BC8F"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="2080"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="5"></attribute>
+		<inputParameters>
+			<variables name="ChoiceWrd" typeName="WORD">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="PreChoiceWrd" typeName="WORD">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+		</inputParameters>
+		<inOutParameters>
+			<variables name="ChangeOnWrd" typeName="WORD">
+				<attribute name="PositionPin" value="5"></attribute>
+			</variables>
+			<variables name="ChangeOffWrd" typeName="WORD">
+				<attribute name="PositionPin" value="6"></attribute>
+			</variables>
+		</inOutParameters>
+		<FBProgram name="prg">
+			<STSource>
+
+(* Check if a bit is turn On or Off*)
+
+
+if ChoiceWrd.0=True and PreChoiceWrd.0=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.0:=true;
+end_if;
+if ChoiceWrd.0=False and PreChoiceWrd.0=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.0:=true;
+end_if;
+
+if ChoiceWrd.1=True and PreChoiceWrd.1=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.1:=true;
+end_if;
+if ChoiceWrd.1=False and PreChoiceWrd.1=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.1:=true;
+end_if;
+
+if ChoiceWrd.2=True and PreChoiceWrd.2=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.2:=true;
+end_if;
+if ChoiceWrd.2=False and PreChoiceWrd.2=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.2:=true;
+end_if;
+
+if ChoiceWrd.3=True and PreChoiceWrd.3=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.3:=true;
+end_if;
+if ChoiceWrd.3=False and PreChoiceWrd.3=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.3:=true;
+end_if;
+
+if ChoiceWrd.4=True and PreChoiceWrd.4=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.4:=true;
+end_if;
+if ChoiceWrd.4=False and PreChoiceWrd.4=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.4:=true;
+end_if;
+
+if ChoiceWrd.5=True and PreChoiceWrd.5=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.5:=true;
+end_if;
+if ChoiceWrd.5=False and PreChoiceWrd.5=True then (*now Off, previous cycle On, so turned off*)
+	ChangeOffWrd.5:=true;
+end_if;
+
+if ChoiceWrd.6=True and PreChoiceWrd.6=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.6:=true;
+end_if;
+if ChoiceWrd.6=False and PreChoiceWrd.6=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.6:=true;
+end_if;
+
+if ChoiceWrd.7=True and PreChoiceWrd.7=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.7:=true;
+end_if;
+if ChoiceWrd.7=False and PreChoiceWrd.7=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.7:=true;
+end_if;
+
+if ChoiceWrd.8=True and PreChoiceWrd.8=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.8:=true;
+end_if;
+if ChoiceWrd.8=False and PreChoiceWrd.8=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.8:=true;
+end_if;
+
+if ChoiceWrd.9=True and PreChoiceWrd.9=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.9:=true;
+end_if;
+if ChoiceWrd.9=False and PreChoiceWrd.9=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.9:=true;
+end_if;
+
+if ChoiceWrd.10=True and PreChoiceWrd.10=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.10:=true;
+end_if;
+if ChoiceWrd.10=False and PreChoiceWrd.10=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.10:=true;
+end_if;
+
+if ChoiceWrd.11=True and PreChoiceWrd.11=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.11:=true;
+end_if;
+if ChoiceWrd.11=False and PreChoiceWrd.11=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.11:=true;
+end_if;
+
+if ChoiceWrd.12=True and PreChoiceWrd.12=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.12:=true;
+end_if;
+if ChoiceWrd.12=False and PreChoiceWrd.12=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.12:=true;
+end_if;
+
+if ChoiceWrd.13=True and PreChoiceWrd.13=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.13:=true;
+end_if;
+if ChoiceWrd.13=False and PreChoiceWrd.13=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.13:=true;
+end_if;
+
+if ChoiceWrd.14=True and PreChoiceWrd.14=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.14:=true;
+end_if;
+if ChoiceWrd.14=False and PreChoiceWrd.14=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.14:=true;
+end_if;
+
+if ChoiceWrd.15=True and PreChoiceWrd.15=False then (*now On, previous cycle Off, so it's turned on*)
+	ChangeOnWrd.15:=true;
+end_if;
+if ChoiceWrd.15=False and PreChoiceWrd.15=True then (*now Off, previous cycle On, so it's turned off*)
+	ChangeOffWrd.15:=true;
+end_if;
+</STSource>
+		</FBProgram>
+	</FBSource>
+</FBExchangeFile>
