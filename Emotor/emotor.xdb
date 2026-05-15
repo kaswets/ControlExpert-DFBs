@@ -1,0 +1,2131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FBExchangeFile>
+	<fileHeader company="Schneider Automation" product="Control Expert V14.1 - 191122A" dateTime="date_and_time#2026-5-15-16:34:23" content="Function Block source file" DTDVersion="41"></fileHeader>
+	<contentHeader name="Project" version="0.0.1727" dateTime="date_and_time#2026-5-12-9:46:28"></contentHeader>
+	<FBSource nameOfFBType="Emotor" version="0.84" dateTime="dt#2026-05-13-13:21:46">
+		<comment>Function block for a electro motor</comment>
+		<attribute name="IsTypeDiagnostic" value="TRUE"></attribute>
+		<attribute name="TypeCodeCheckSumString" value="3569"></attribute>
+		<attribute name="TypeSignatureCheckSumString" value="E5C3"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="79"></attribute>
+		<inputParameters>
+			<variables name="Inputs" typeName="Emotor_In">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+			<variables name="EmotNr" typeName="INT">
+				<attribute name="PositionPin" value="5"></attribute>
+			</variables>
+			<variables name="MainTxt" typeName="string[40]">
+				<attribute name="PositionPin" value="6"></attribute>
+			</variables>
+		</inputParameters>
+		<inOutParameters>
+			<variables name="InOut" typeName="Emotor_InOut">
+				<attribute name="PositionPin" value="2"></attribute>
+			</variables>
+			<variables name="General" typeName="General">
+				<attribute name="PositionPin" value="3"></attribute>
+			</variables>
+			<variables name="StartRow" typeName="ARRAY[0..30] OF INT">
+				<attribute name="PositionPin" value="4"></attribute>
+			</variables>
+		</inOutParameters>
+		<outputParameters>
+			<variables name="Outputs" typeName="Emotor_Out">
+				<attribute name="PositionPin" value="1"></attribute>
+			</variables>
+		</outputParameters>
+		<publicLocalVariables>
+			<variables name="Parameters" typeName="Parameters"></variables>
+			<variables name="AREA_NR" typeName="INT">
+				<variableInit value="1"></variableInit>
+			</variables>
+			<variables name="OP_CTRL" typeName="BOOL">
+				<variableInit value="true"></variableInit>
+			</variables>
+		</publicLocalVariables>
+		<privateLocalVariables>
+			<variables name="waitOnOtherMotor" typeName="BOOL"></variables>
+			<variables name="Stopping" typeName="BOOL"></variables>
+			<variables name="Starting" typeName="BOOL"></variables>
+			<variables name="AlarmWrdPrevCyclus" typeName="WORD"></variables>
+			<variables name="tmpStartstop" typeName="EBOOL"></variables>
+			<variables name="boolPulsOnOff" typeName="BOOL"></variables>
+			<variables name="eMotorInWait" typeName="BOOL"></variables>
+			<variables name="abort" typeName="BOOL"></variables>
+			<variables name="tmpStart" typeName="EBOOL"></variables>
+			<variables name="T" typeName="INT"></variables>
+			<variables name="List" typeName="INT"></variables>
+			<variables name="List2" typeName="INT"></variables>
+			<variables name="TP_Start" typeName="TP"></variables>
+			<variables name="TP_Stop" typeName="TP"></variables>
+			<variables name="OneOutput" typeName="BOOL"></variables>
+			<variables name="TONGenAlarm_0" typeName="TON"></variables>
+			<variables name="TONNotStarting_1" typeName="TON"></variables>
+			<variables name="TONPMSstartErrorTime_0" typeName="TON"></variables>
+			<variables name="TON_CompRun" typeName="TON"></variables>
+			<variables name="StartAlarmTime" typeName="TIME"></variables>
+			<variables name="TOF_StopBtn" typeName="TOF"></variables>
+			<variables name="tmpStartupDelay" typeName="DINT"></variables>
+			<variables name="TON_NotStopping" typeName="TON"></variables>
+			<variables name="CopyAlarms" typeName="WORD"></variables>
+			<variables name="TON_1" typeName="TON"></variables>
+			<variables name="StopByAlarm" typeName="BOOL"></variables>
+			<variables name="TOF_run" typeName="TOF"></variables>
+			<variables name="InternAlarm" typeName="BOOL"></variables>
+			<variables name="Status_0" typeName="DINT"></variables>
+			<variables name="ErrId_0" typeName="INT"></variables>
+			<variables name="Status_1" typeName="DINT"></variables>
+			<variables name="ErrId_1" typeName="INT"></variables>
+			<variables name="Status_2" typeName="DINT"></variables>
+			<variables name="ErrId_2" typeName="INT"></variables>
+			<variables name="Status_3" typeName="DINT"></variables>
+			<variables name="ErrId_3" typeName="INT"></variables>
+			<variables name="Status_4" typeName="DINT"></variables>
+			<variables name="ErrId_4" typeName="INT"></variables>
+			<variables name="ErrId_5" typeName="INT"></variables>
+			<variables name="Status_5" typeName="DINT"></variables>
+			<variables name="ErrId_7" typeName="INT"></variables>
+			<variables name="Status_7" typeName="DINT"></variables>
+			<variables name="Status_8" typeName="DINT"></variables>
+			<variables name="ErrId_8" typeName="INT"></variables>
+			<variables name="Status_9" typeName="DINT"></variables>
+			<variables name="ErrId_9" typeName="INT"></variables>
+			<variables name="Status_10" typeName="DINT"></variables>
+			<variables name="ErrId_10" typeName="INT"></variables>
+			<variables name="Status_12" typeName="DINT"></variables>
+			<variables name="Status_11" typeName="DINT"></variables>
+			<variables name="ErrId_11" typeName="INT"></variables>
+			<variables name="ErrId_12" typeName="INT"></variables>
+			<variables name="Status_13" typeName="DINT"></variables>
+			<variables name="ErrId_13" typeName="INT"></variables>
+			<variables name="Status_14" typeName="DINT"></variables>
+			<variables name="ErrId_14" typeName="INT"></variables>
+			<variables name="Status_15" typeName="DINT"></variables>
+			<variables name="ErrId_15" typeName="INT"></variables>
+			<variables name="Status_6" typeName="DINT"></variables>
+			<variables name="ErrId_6" typeName="INT"></variables>
+			<variables name="testBit" typeName="BOOL"></variables>
+			<variables name="TestStr0" typeName="string[40]"></variables>
+			<variables name="TestStr1" typeName="string[40]"></variables>
+			<variables name="TestStr2" typeName="string[40]"></variables>
+			<variables name="TestStr3" typeName="string[40]"></variables>
+			<variables name="TestStr4" typeName="string[40]"></variables>
+			<variables name="TestStr5" typeName="string[40]"></variables>
+			<variables name="TestStr6" typeName="string[40]"></variables>
+			<variables name="TestStr7" typeName="string[40]"></variables>
+			<variables name="TestStr8" typeName="string[40]"></variables>
+			<variables name="TestStr9" typeName="string[40]"></variables>
+			<variables name="TestStr10" typeName="string[40]"></variables>
+			<variables name="TestStr11" typeName="string[40]"></variables>
+			<variables name="TestStr12" typeName="string[40]"></variables>
+			<variables name="TestStr13" typeName="string[40]"></variables>
+			<variables name="TestStr14" typeName="string[40]"></variables>
+			<variables name="TestStr15" typeName="string[40]"></variables>
+			<variables name="TON_Run" typeName="TON"></variables>
+		</privateLocalVariables>
+		<FBProgram name="info">
+			<STSource>(*														
+(*	Dit is het eerste programma met de nieuwe alarmen.							*)
+(*														*)
+(*	Vroegur!: kwam er uit elke functie blok een alarmword, met daar in 16 bitjes voor de alarmen		*)
+(*														*)
+(*	dan op een andere plek in het programma werden deze bitjes aan Alrm_dia functie's gekoppeld om 		*)
+(*	de alarm teksten op de HMIs te krijgen.									*)
+(*														*)
+(*	Dit omdat een Alrm_dia niet in een eigen function blok mocht, en omdat de alarm teskst via de 		*)
+(*	Comments mee gegeven moest worden.									*)
+(*														*)
+(*	Later ondekte ik de UREGDFB diag function block , die kan dus ipv een Alarm tekst van uit de 		*)
+(*	Comments ook met een String variabele werken.								*)
+(*														*)
+(*	Later ontdekte ik, als je bij de properties van een function Block  het vinkje Diag aan zet		*)
+(*	je WEL diagnostic functies in je eigen function blok kan zetten.					*)
+(*														*)
+(*	Dit scheelt zoveel werk. Want nu kan je de Alarmen in de functieblokken zelf stoppen. 			*)
+
+
+(*														*)
+(*  	This is the first program with the new alarms.								*)
+(*														*)
+(*  	Previously: each function block returned an alarm word,							*)
+(*  	containing 16 bits for the alarms.									*)
+(*														*)
+(*  	These bits were then linked to Alrm_dia functions elsewhere						*)
+(*  	in the program, in order to display the alarm texts on the HMIs.					*)
+(*														*)
+(*  	This was necessary because an Alrm_dia was not allowed inside						*)
+(*  	a function block, and because the alarm text had to be passed						*)
+(*  	via the Comments field.											*)
+(*														*)
+(*  	Later I discovered the UREGDFB diagnostic function block, which						*)
+(*  	can work with a String variable instead of an alarm text						*)
+(*  	from the Comments field.										*)
+(*														*)
+(*  	Later I discovered that if you enable the Diag checkbox in the						*)
+(*  	properties of a function block, you CAN place diagnostic						*)
+(*  	functions inside your own function block.								*)
+(*														*)
+(*  	This saves a lot of work, because now you can put the alarms						*)
+(*  	directly inside the function blocks themselves.								*)
+</STSource>
+		</FBProgram>
+		<FBProgram name="ExtraForAlarms">
+			<STSource>
+(* Only if there is a outside TXT use the Intern Alarms *)
+InternAlarm:=false;
+
+if MainTxt&lt;&gt;'' then
+	InternAlarm:=true;
+end_if;
+</STSource>
+		</FBProgram>
+		<FBProgram name="OneButtunStartStop">
+			<STSource>
+tmpStartstop:=InOut.Data.PulsOnOff;
+
+if re(tmpStartStop) then
+
+boolPulsOnOff:=BoolPulsOnOff xor 1;
+
+	if startRow[0]=EmotNr or eMotorInWait then
+		InOut.Data.Stop:=true;
+		InOut.Data.PulsOnOff:=false;
+	end_if;
+end_if;
+</STSource>
+		</FBProgram>
+		<FBProgram name="ShiftStartArrayUp">
+			<STSource>(* 
+zodra op start gedrukt word, het motor nummer onderaan in de wacht lijst zetten...
+en daarna worden de nummers omhoog geschoven, de motor op plek 0 word gestart
+
+wel eerst even kijken of de motor al niet in de lijst staat....
+
+*)
+
+
+abort:=false;
+
+tmpStart:=InOut.Data.Start or ( InOut.Data.PulsOnOff and not (inputs.running or starting));
+
+if re(tmpStart) then
+
+
+	for T:=30 to 1 by -1 do   (* motor staat al in de lijst, dus exit*)
+		if startRow[T]=EmotNr then
+			abort:=true;;
+		end_if;
+	end_for;
+
+	if abort=false then
+		startRow[30]:=EmotNr;
+
+		for T:=30 to 1 by -1 do
+			if startRow[T-1]=0 then
+				startRow[T-1]:=startRow[T];
+				startRow[T]:=0;
+			end_if;
+		end_for;
+	end_if;
+end_If;
+</STSource>
+		</FBProgram>
+		<FBProgram name="EmotIsInList">
+			<STSource>
+(*Kijken of deze motor in de wacht rij staat*)
+
+
+eMotorInWait:=False;
+
+for T:=30 to 1 by -1 do
+	if startRow[T]=EmotNr then
+		eMotorInWait:=true;
+	end_if;
+end_for;
+</STSource>
+		</FBProgram>
+		<FBProgram name="AbortEmot">
+			<STSource>
+(* they press stop while the motor was starting, reset some bits *)
+
+if startRow[0]=EmotNr and (InOut.Data.Stop or InOut.Data.Alarm) then
+	starting:=false;
+	General.NextStartDelayTime:=0;
+end_if;
+
+(* this motor is waiting for start, or is busy with starting  , 
+and they press stop, or there is a alarm
+, so delete this motor from the startlist, and move the other waiting motors up *)
+
+if (eMotorInWait=true or startRow[0]=EmotNr) and (InOut.Data.Stop or InOut.Data.Alarm) then
+	for List:=0 to 30 by 1 do
+		 if startRow[List]=EmotNr then
+		 	
+		         for List2:=List to 29 by 1 do
+				startRow[List2]:=startRow[List2+1];
+			end_for;
+		end_if;
+	end_for;
+end_if;
+</STSource>
+		</FBProgram>
+		<FBProgram name="Prg_Emot">
+			<LDSource nbColumns="20">
+				<networkLD>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.OneOutput"></contact>
+						<HLink nbCells="15"></HLink>
+						<coil typeCoil="coil" coilVariableName="OneOutput"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="17"></HLink>
+						<coil typeCoil="coil" coilVariableName="StopByAlarm"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="General.Alarm_Reset"></contact>
+						<HLink nbCells="15"></HLink>
+						<operateBlock width="4">
+							<statement>Outputs.Alarms.wrd:=0;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="%S13"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="11"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Starting"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="General.EMStopOKay"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="11"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Stopping"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.Alarm"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="15"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="4"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="startRow[0]&lt;&gt;EmotNr"></contact>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="eMotorInWait"></contact>
+						<HLink nbCells="10"></HLink>
+						<coil typeCoil="coil" coilVariableName="WaitOnOtherMotor"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.Stop"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="10"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Stopping"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="3"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.PulsOnOff"></contact>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="8"></emptyCell>
+						<VLink></VLink>
+						<contact typeContact="openContact" contactVariableName="parameters.WaitOnPMS"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="General.aEmotorWaitOnPMS"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Stopping"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Outputs.PowerRequest"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="8"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="7"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="General.aEmotorWaitOnPms"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="startRow[0]=EmotNr"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="General.aEmotorIsStarting"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="InOut.Data.Alarm"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="General.aEmotorWaitOnPMS"></contact>
+						<HLink nbCells="1"></HLink>
+						<shortCircuit>
+							<VLink></VLink>
+							<contact typeContact="closedContact" contactVariableName="Inputs.Running"></contact>
+						</shortCircuit>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.PowerAvailable"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<contact typeContact="openContact" contactVariableName="Inputs.GenAlarm"></contact>
+						<HLink nbCells="2"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Starting"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="9"></emptyCell>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.WaitOnPMS"></contact>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="6"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="OneOutput"></contact>
+						<HLink nbCells="15"></HLink>
+						<control typeControl="jumpCoil" label="OneOutput"></control>
+						<emptyCell nbCells="1"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="9"></emptyCell>
+						<FFBBlock instanceName="TP_Start" typeName="TP" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="9" posY="26"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="t#1000ms"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Starting"></contact>
+						<HLink nbCells="6"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="6"></HLink>
+						<coil typeCoil="coil" coilVariableName="Outputs.Start"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="9"></emptyCell>
+						<FFBBlock instanceName="TP_Stop" typeName="TP" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="9" posY="30"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="t#1000ms"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="9"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Stopping"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="6"></HLink>
+						<coil typeCoil="coil" coilVariableName="Outputs.Stop"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="StopByAlarm"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.Alarm"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="14"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="17"></HLink>
+						<control typeControl="jumpCoil" label="Next"></control>
+						<emptyCell nbCells="2"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<labelCell label="OneOutput">
+							<objPosition posX="0" posY="38"></objPosition>
+						</labelCell>
+						<emptyCell nbCells="19"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Starting"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="12"></HLink>
+						</shortCircuit>
+						<HLink nbCells="2"></HLink>
+						<coil typeCoil="coil" coilVariableName="Outputs.Start"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Outputs.Start"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Stopping"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="InOut.Data.Stop"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="InOut.Data.Alarm"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="5"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="10"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="StopByAlarm"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="5"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<labelCell label="Next">
+							<objPosition posX="0" posY="42"></objPosition>
+						</labelCell>
+						<emptyCell nbCells="19"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="PContact" contactVariableName="Starting"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="5"></HLink>
+						</shortCircuit>
+						<contact typeContact="closedContact" contactVariableName="General.SimulationOn"></contact>
+						<HLink nbCells="9"></HLink>
+						<operateBlock width="4">
+							<statement>General.NextStartDelayTime:=Parameters.StartupDelayTime ;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="6"></emptyCell>
+						<contact typeContact="openContact" contactVariableName="General.SimulationOn"></contact>
+						<HLink nbCells="9"></HLink>
+						<operateBlock width="4">
+							<statement>General.NextStartDelayTime:=10;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="7"></emptyCell>
+						<FFBBlock instanceName="TONGenAlarm_0" typeName="TON" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="7" posY="49"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="T#1s"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="11"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.GenAlarm"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.PlcInRun"></contact>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="8"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Outputs.Alarms.Alarm_bit0"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="3"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="7"></emptyCell>
+						<FFBBlock instanceName=".1" typeName="INT_TO_DINT" additionnalPinNumber="0" enEnO="true" width="12" height="3">
+							<objPosition posX="7" posY="55"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN" effectiveParameter="Parameters.StartupDelayTime"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="OUT" effectiveParameter="tmpStartupDelay"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="11"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="7"></HLink>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="7"></emptyCell>
+						<FFBBlock instanceName=".3" typeName="DINT_TO_TIME" additionnalPinNumber="0" enEnO="true" width="14" height="3">
+							<objPosition posX="7" posY="58"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN" effectiveParameter="(tmpStartupDelay+5)*1000"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="OUT" effectiveParameter="StartAlarmTime"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="11"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="7"></HLink>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="10"></emptyCell>
+						<FFBBlock instanceName="TOF_StopBtn" typeName="TOF" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="10" posY="62"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="T#2000ms"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="8"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.PulsOnOff"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="4"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.Stop"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="10"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="4"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.btnOff"></contact>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="10"></emptyCell>
+						<FFBBlock instanceName="TONNotStarting_1" typeName="TON" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="10" posY="67"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="StartAlarmTime"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="8"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Starting"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="waitOnOtherMotor"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="3"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Starting"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="14"></emptyCell>
+						<HLink nbCells="3"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Outputs.Alarms.Alarm_bit1"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="3"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="8"></emptyCell>
+						<FFBBlock instanceName="TON_NotStopping" typeName="TON" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="8" posY="74"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="StartAlarmTime"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="10"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Stopping"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="4"></HLink>
+						</shortCircuit>
+						<HLink nbCells="3"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Stopping"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="14"></emptyCell>
+						<HLink nbCells="3"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Outputs.Alarms.Alarm_bit2"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="3"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="8"></emptyCell>
+						<FFBBlock instanceName="TONPMSstartErrorTime_0" typeName="TON" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="8" posY="81"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="t#60s"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="10"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="10"></emptyCell>
+						<VLink></VLink>
+						<HLink nbCells="6"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="outputs.Alarms.Alarm_bit7"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<shortCircuit>
+							<VLink></VLink>
+							<contact typeContact="openContact" contactVariableName="outputs.PowerRequest"></contact>
+						</shortCircuit>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="inputs.PowerAvailable"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="5"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="outputs.PowerRequest"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="1"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="9"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="8"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.Stop"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="8"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="8"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Stopping"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="9"></HLink>
+						<emptyCell nbCells="8"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.alarm"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="17"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.WaitOnPMS"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="17"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="8"></emptyCell>
+						<FFBBlock instanceName="TON_1" typeName="TON" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="8" posY="91"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="T#500ms"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="10"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.AlarmMainSwitch"></contact>
+						<HLink nbCells="5"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<HLink nbCells="8"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Outputs.Alarms.Alarm_bit5"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="4"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="5"></emptyCell>
+						<FFBBlock instanceName="TOF_run" typeName="TOF" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="5" posY="98"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="t#100ms"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="2"></HLink>
+						<emptyCell nbCells="15"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.DontReactOnlostRun"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="NContact" contactVariableName="Tof_run.q"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Stopping"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.PlcInRun"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="TOF_StopBtn.q"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Parameters.OffByFIreSwitch"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="2"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Outputs.Alarms.Alarm_bit3"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="12"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.FireSwitchOkay"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="5"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Parameters.OffByFIreSwitch"></contact>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.FireSwitchOkay"></contact>
+						<HLink nbCells="10"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="Outputs.Alarms.Alarm_bit12"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="Starting"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="15"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Starting"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="Stopping"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="15"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Stopping"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="openContact" contactVariableName="Starting"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Stopping"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="13"></HLink>
+						</shortCircuit>
+						<HLink nbCells="2"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Starting"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="16"></emptyCell>
+						<HLink nbCells="2"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="Stopping"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.Warning"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.PlcInRun"></contact>
+						<HLink nbCells="12"></HLink>
+						<coil typeCoil="coil" coilVariableName="Outputs.Alarms.Alarm_bit15"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<contact typeContact="PContact" contactVariableName="%S6"></contact>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="13"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.RunSecs:=InOut.RunSecs+1;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.RunSecs &gt; 59"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="11"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.RunSecs:=0;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="5"></emptyCell>
+						<HLink nbCells="11"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.RunMins:=InOut.RunMins+1;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.RunMins &gt; 59"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="11"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.RunMins:=0;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="5"></emptyCell>
+						<HLink nbCells="11"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.RunHours:=InOut.RunHours+1;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.ResetRunTime"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="13"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.RunSecs:=0;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="2"></emptyCell>
+						<VLink></VLink>
+						<HLink nbCells="13"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.RunMins:=0;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="3"></emptyCell>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="12"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.RunHours:=0;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="15"></emptyCell>
+						<HLink nbCells="2"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="InOut.Data.ResetRunTime"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Starting"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="InOut.Data.Alarm"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="8"></HLink>
+						<coil typeCoil="coil" coilVariableName="InOut.Data.Idle"></coil>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="11"></emptyCell>
+						<HLink nbCells="5"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.Status:=0;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="6"></emptyCell>
+						<FFBBlock instanceName="TON_CompRun" typeName="TON" additionnalPinNumber="0" enEnO="false" width="10" height="4">
+							<objPosition posX="6" posY="135"></objPosition>
+							<descriptionFFB execAfter="">
+								<inputVariable invertedPin="false" formalParameter="EN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="IN"></inputVariable>
+								<inputVariable invertedPin="false" formalParameter="PT" effectiveParameter="t#1000ms"></inputVariable>
+								<outputVariable invertedPin="false" formalParameter="ENO"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="Q"></outputVariable>
+								<outputVariable invertedPin="false" formalParameter="ET"></outputVariable>
+							</descriptionFFB>
+						</FFBBlock>
+						<emptyCell nbCells="12"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="3"></HLink>
+						<emptyCell nbCells="2"></emptyCell>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<HLink nbCells="8"></HLink>
+						<coil typeCoil="coil" coilVariableName="InOut.Data.Running"></coil>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="11"></emptyCell>
+						<HLink nbCells="5"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.Status:=1;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="startRow[0]=EmotNr"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<emptyCell nbCells="14"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="waitOnOtherMotor"></contact>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Starting"></contact>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.Running"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="3"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.Status:=5;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="Stopping"></contact>
+						<HLink nbCells="10"></HLink>
+						<coil typeCoil="coil" coilVariableName="InOut.Data.Wait"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="outputs.PowerRequest"></contact>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="inputs.PowerAvailable"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="5"></HLink>
+						</shortCircuit>
+						<HLink nbCells="5"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.Status:=6;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="11"></emptyCell>
+						<HLink nbCells="6"></HLink>
+						<coil typeCoil="coil" coilVariableName="InOut.Data.PulsOnOff"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="closedContact" contactVariableName="Inputs.Warning"></contact>
+						<HLink nbCells="13"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.Status:=2;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="startRow[0]=EmotNr"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="2"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="Inputs.Running"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="1"></HLink>
+						</shortCircuit>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.NextStartDelayTime&gt;0"></contact>
+						<HLink nbCells="7"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.Status:=4;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="4"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="starting"></contact>
+						<HLink nbCells="1"></HLink>
+						<emptyCell nbCells="13"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="16"></HLink>
+						<operateBlock width="4">
+							<statement>CopyAlarms:=Outputs.Alarms.wrd  &amp; 2#0000111111111111;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="2"></HLink>
+						<contact typeContact="openContact" contactVariableName="CopyAlarms&gt;0"></contact>
+						<HLink nbCells="5"></HLink>
+						<contact typeContact="openContact" contactVariableName="General.PlcInRun"></contact>
+						<shortCircuit>
+							<VLink></VLink>
+							<HLink nbCells="6"></HLink>
+						</shortCircuit>
+						<HLink nbCells="4"></HLink>
+						<coil typeCoil="coil" coilVariableName="InOut.Data.Alarm"></coil>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="14"></emptyCell>
+						<VLink></VLink>
+						<emptyCell nbCells="5"></emptyCell>
+					</typeLine>
+					<typeLine>
+						<emptyCell nbCells="15"></emptyCell>
+						<HLink nbCells="1"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.Status:=3;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="3"></HLink>
+						<contact typeContact="openContact" contactVariableName="CopyAlarms&gt;AlarmWrdPrevCyclus"></contact>
+						<HLink nbCells="13"></HLink>
+						<coil typeCoil="setCoil" coilVariableName="General.Buzzer"></coil>
+						<HLink nbCells="2"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="16"></HLink>
+						<operateBlock width="4">
+							<statement>AlarmWrdPrevCyclus:=CopyAlarms;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="16"></HLink>
+						<operateBlock width="4">
+							<statement>InOut.Pressure:=Inputs.Pressure;</statement>
+						</operateBlock>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="2"></emptyLine>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.Start"></contact>
+						<HLink nbCells="16"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="InOut.Data.Start"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.Stop"></contact>
+						<HLink nbCells="16"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="InOut.Data.Stop"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<HLink nbCells="1"></HLink>
+						<contact typeContact="openContact" contactVariableName="InOut.Data.PulsOnOff"></contact>
+						<HLink nbCells="16"></HLink>
+						<coil typeCoil="resetCoil" coilVariableName="InOut.Data.PulsOnOff"></coil>
+						<HLink nbCells="1"></HLink>
+					</typeLine>
+					<typeLine>
+						<emptyLine nbRows="1"></emptyLine>
+					</typeLine>
+					<textBox width="11" height="1">FireSwitch<objPosition posX="0" posY="105"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Hold other motor to start for x sec
+    <objPosition posX="0" posY="44"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Statusses
+    <objPosition posX="0" posY="131"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Start Pulse from HMI control
+    <objPosition posX="0" posY="11"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Set buzzer when an alarm comes up. the buzzer can be reset by pressing reset
+don't set buzzer by bit 12,13,14 &amp;15 (are warnings)<objPosition posX="0" posY="159"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Reset tmp Starting bit Started when running<objPosition posX="0" posY="108"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Reset tmp Stopping bit when stopped<objPosition posX="0" posY="111"></objPosition>
+					</textBox>
+					<textBox width="5" height="1">Start/Stop pulsen aan sturen
+    <objPosition posX="0" posY="27"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">General Alarm
+    <objPosition posX="0" posY="48"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Not stopped in time<objPosition posX="0" posY="73"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Reset alarms
+    <objPosition posX="0" posY="3"></objPosition>
+					</textBox>
+					<textBox width="7" height="1">op start gedrukt, terwijl een andere motor aan het starten is, dus even wachten
+    <objPosition posX="0" posY="12"></objPosition>
+					</textBox>
+					<textBox width="4" height="1">Groen/Green = Running
+    <objPosition posX="16" posY="136"></objPosition>
+					</textBox>
+					<textBox width="5" height="1">1 Output aan zetten zolang de motor draaien moet
+    <objPosition posX="0" posY="37"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Main Switch<objPosition posX="0" posY="90"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Lost run, while plc don't give stop command<objPosition posX="0" posY="97"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Reset start/stop command from HMI
+    <objPosition posX="0" posY="165"></objPosition>
+					</textBox>
+					<textBox width="4" height="1">Grijs /grey = off
+    <objPosition posX="16" posY="132"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Not started in time
+    <objPosition posX="0" posY="54"></objPosition>
+					</textBox>
+					<textBox width="4" height="1">donker blauw/Dark blue  = wait on PMS
+    <objPosition posX="16" posY="144"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Echte outputjes aansturen
+    <objPosition posX="0" posY="22"></objPosition>
+					</textBox>
+					<textBox width="4" height="1">Licht blauw/Light blue  =  Motor is starting
+    <objPosition posX="16" posY="151"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Warning active
+    <objPosition posX="0" posY="117"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Filter out  bits 14 &amp; 15, because they are warnings<objPosition posX="0" posY="155"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Start request fout, of stoppen
+    <objPosition posX="0" posY="80"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Running Hours
+    <objPosition posX="0" posY="120"></objPosition>
+					</textBox>
+					<textBox width="11" height="1">Init
+    <objPosition posX="0" posY="6"></objPosition>
+					</textBox>
+					<textBox width="4" height="1">Geel/yellow  Wait for other motors
+    <objPosition posX="16" posY="140"></objPosition>
+					</textBox>
+					<textBox width="4" height="1">Oranje/orange = warning
+    <objPosition posX="16" posY="148"></objPosition>
+					</textBox>
+					<textBox width="4" height="1">Rood/Red  =  Alarm
+    <objPosition posX="16" posY="158"></objPosition>
+					</textBox>
+				</networkLD>
+			</LDSource>
+		</FBProgram>
+		<FBProgram name="EmotIsStarted">
+			<STSource>
+
+(* Motor Op eerste plaats in de wachtrij is gestart, dus wissen, en de rest van de rij omhoog schuiven*)
+
+
+if EmotNr=startRow[0] and InOut.Data.Running and General.NextStartDelayTime=0  then
+
+
+	for T:=1 to 30 by 1 do
+		 startRow[T-1]:=startRow[T];
+	end_for;
+end_if;
+</STSource>
+		</FBProgram>
+		<FBProgram name="Alarms" activationCondition="InternAlarm" logicCondition="standard">
+			<STSource>(*	hier word de MainTxt , welke buiten het functieblok ingevuld word, in de ondestaande alarmteksten gezet		*)
+(*															*)
+(*	Alarm teksten zitten nu dus in het motor starter programma, en hoeven dus niet meer telkens ingetypt te worden	*)
+(*	het Alarm woord word nog wel naar buiten gebracht, om eventueel ergens anders iets tegen te kunnen houden bij	*)
+(*	een bepaald alarm												*)
+(*	Word alleen uitgevoerd als er aan de buitenkant een tekst ingevuld is						*)
+
+
+TestStr0 := CONCAT_STR(MainTxt, ' - General alarm');
+TestStr1 := CONCAT_STR(MainTxt, ' - Failed to start');
+TestStr2 := CONCAT_STR(MainTxt, ' - Failed to stop');
+TestStr3 := CONCAT_STR(MainTxt, ' - Lost Run');
+TestStr4 := CONCAT_STR(MainTxt, ' - Safety switch');
+TestStr5 := CONCAT_STR(MainTxt, ' - Main switch');
+TestStr6 := CONCAT_STR(MainTxt, ' - Tripped');
+TestStr7 := CONCAT_STR(MainTxt, ' - No power available');
+TestStr8 := CONCAT_STR(MainTxt, ' - VFD Fault');
+TestStr9 := CONCAT_STR(MainTxt, ' - Softst. Fault');
+TestStr10 := CONCAT_STR(MainTxt, ' - Safety valve');
+TestStr11 := CONCAT_STR(MainTxt, ' - Local Control');
+TestStr12 := CONCAT_STR(MainTxt, ' - Fire Switch');
+TestStr13 := CONCAT_STR(MainTxt, ' - Low Pressure');
+TestStr14 := CONCAT_STR(MainTxt, ' - Warning1');
+TestStr15 := CONCAT_STR(MainTxt, ' - Warning2');
+
+TON_Run (IN := %s12, PT := t#1000ms);
+
+if Ton_Run.q then
+
+	(* Testbitje, als hij knippert, word dit stuk code doorlopen *)
+	testBit:=testBit xor 1;
+
+	(* Bit 0 - General alarm *)
+	IF Outputs.Alarms.Alarm_bit0 AND ErrId_0 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr0, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_0, ERID=&gt;ErrId_0, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit0 AND ErrId_0 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_0);
+	    IF %SW77 = 0 THEN ErrId_0 := 0; END_IF;
+	END_IF;
+
+	(* Bit 1 - Failed to start *)
+	IF Outputs.Alarms.Alarm_bit1 AND ErrId_1 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr1, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_1, ERID=&gt;ErrId_1, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit1 AND ErrId_1 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_1);
+	    IF %SW77 = 0 THEN ErrId_1 := 0; END_IF;
+	END_IF;
+
+	(* Bit 2 - Failed to stop *)
+	IF Outputs.Alarms.Alarm_bit2 AND ErrId_2 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr2, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_2, ERID=&gt;ErrId_2, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit2 AND ErrId_2 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_2);
+	    IF %SW77 = 0 THEN ErrId_2 := 0; END_IF;
+	END_IF;
+
+	(* Bit 3 - Shutoff without stop *)
+	IF Outputs.Alarms.Alarm_bit3 AND ErrId_3 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr3, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_3, ERID=&gt;ErrId_3, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit3 AND ErrId_3 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_3);
+	    IF %SW77 = 0 THEN ErrId_3 := 0; END_IF;
+	END_IF;
+
+	(* Bit 4 - Safety switch *)
+	IF Outputs.Alarms.Alarm_bit4 AND ErrId_4 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr4, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_4, ERID=&gt;ErrId_4, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit4 AND ErrId_4 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_4);
+	    IF %SW77 = 0 THEN ErrId_4 := 0; END_IF;
+	END_IF;
+
+	(* Bit 5 - Main switch *)
+	IF Outputs.Alarms.Alarm_bit5 AND ErrId_5 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr5, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_5, ERID=&gt;ErrId_5, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit5 AND ErrId_5 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_5);
+	    IF %SW77 = 0 THEN ErrId_5 := 0;  END_IF;
+	END_IF;
+
+	(* Bit 6 - Tripped *)
+	IF Outputs.Alarms.Alarm_bit6 AND ErrId_6 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr6, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_6, ERID=&gt;ErrId_6, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit6 AND ErrId_6 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_6);
+	    IF %SW77 = 0 THEN ErrId_6 := 0; END_IF;
+	END_IF;
+
+	(* Bit 7 - No power available *)
+	IF Outputs.Alarms.Alarm_bit7 AND ErrId_7 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr7, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_7, ERID=&gt;ErrId_7, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit7 AND ErrId_7 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_7);
+	    IF %SW77 = 0 THEN ErrId_7 := 0; END_IF;
+	END_IF;
+
+	(* Bit 8 - VFD Fault *)
+	IF Outputs.Alarms.Alarm_bit8 AND ErrId_8 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr8, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_8, ERID=&gt;ErrId_8, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit8 AND ErrId_8 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_8);
+	    IF %SW77 = 0 THEN ErrId_8 := 0; END_IF;
+	END_IF;
+
+	(* Bit 9 - Softstarter Fault *)
+	IF Outputs.Alarms.Alarm_bit9 AND ErrId_9 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr9, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_9, ERID=&gt;ErrId_9, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit9 AND ErrId_9 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_9);
+	    IF %SW77 = 0 THEN ErrId_9 := 0; END_IF;
+	END_IF;
+
+	(* Bit 10 - Safety valve *)
+	IF Outputs.Alarms.Alarm_bit10 AND ErrId_10 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr10, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_10, ERID=&gt;ErrId_10, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit10 AND ErrId_10 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_10);
+	    IF %SW77 = 0 THEN ErrId_10 := 0; END_IF;
+	END_IF;
+
+	(* Bit 11 - Local Control *)
+	IF Outputs.Alarms.Alarm_bit11 AND ErrId_11 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr11, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_11, ERID=&gt;ErrId_11, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit11 AND ErrId_11 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_11);
+	    IF %SW77 = 0 THEN ErrId_11 := 0; END_IF;
+	END_IF;
+
+	(* Bit 12 - Fire Switch *)
+	IF Outputs.Alarms.Alarm_bit12 AND ErrId_12 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr12, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_12, ERID=&gt;ErrId_12, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit12 AND ErrId_12 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_12);
+	    IF %SW77 = 0 THEN ErrId_12 := 0;  END_IF;
+	END_IF;
+
+	(* Bit 13 - Spare *)
+	IF Outputs.Alarms.Alarm_bit13 AND ErrId_13 = 0 THEN
+	    UREGDFB(AREA:=AREA_NR, CLAS:=16#0062, SLEN:=0, CTRL:=OP_CTRL,
+	            UTXT:=TestStr13, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_13, ERID=&gt;ErrId_13, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit13 AND ErrId_13 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_13);
+	    IF %SW77 = 0 THEN ErrId_13 := 0;  END_IF;
+	END_IF;
+
+	(* Bit 14 - Local control - WARNING *)
+	IF Outputs.Alarms.Alarm_bit14 AND ErrId_14 = 0 THEN
+	    UREGDFB(AREA:=12, CLAS:=16#0062, SLEN:=0, CTRL:=0,
+	            UTXT:=TestStr14, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_14, ERID=&gt;ErrId_14, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit14 AND ErrId_14 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_14);
+	    IF %SW77 = 0 THEN ErrId_14 := 0; END_IF;
+	END_IF;
+
+	(* Bit 15 - Warning *)
+	IF Outputs.Alarms.Alarm_bit15 AND ErrId_15 = 0 THEN
+	    UREGDFB(AREA:=12, CLAS:=16#0062, SLEN:=0, CTRL:=0,
+	            UTXT:=TestStr15, RSEL:=1, PIN:=0, VALPIN:=0,
+	            ESTS=&gt;Status_15, ERID=&gt;ErrId_15, STAT=&gt;%SW76);
+	ELSIF NOT Outputs.Alarms.Alarm_bit15 AND ErrId_15 &lt;&gt; 0 THEN
+	    %SW77 := DEREG(ErrId_15);
+	    IF %SW77 = 0 THEN ErrId_15 := 0; END_IF;
+	END_IF;
+end_if;
+</STSource>
+		</FBProgram>
+	</FBSource>
+	<DDTSource DDTName="Emotor_In" version="0.07" dateTime="dt#2025-04-29-16:15:04">
+		<attribute name="TypeSignatureCheckSumString" value="013D"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="12"></attribute>
+		<structure>
+			<variables name="Running" typeName="BOOL"></variables>
+			<variables name="GenAlarm" typeName="BOOL"></variables>
+			<variables name="AlarmMainSwitch" typeName="BOOL"></variables>
+			<variables name="Warning" typeName="BOOL"></variables>
+			<variables name="PowerAvailable" typeName="BOOL"></variables>
+			<variables name="btnOff" typeName="BOOL"></variables>
+			<variables name="FireSwitchOkay" typeName="BOOL"></variables>
+			<variables name="Pressure" typeName="AnalogChanel"></variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="AnalogChanel" version="0.07" dateTime="dt#2025-04-18-22:55:04">
+		<attribute name="TypeSignatureCheckSumString" value="B607"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="4"></attribute>
+		<structure>
+			<variables name="Value" typeName="INT"></variables>
+			<variables name="alarm" typeName="Analog_Alarms"></variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="Analog_Alarms" version="0.03" dateTime="dt#2022-01-28-08:24:49">
+		<comment>Analog input alarms</comment>
+		<attribute name="TypeSignatureCheckSumString" value="3F1D"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="2"></attribute>
+		<structure>
+			<variables name="Alarms" typeName="WORD"></variables>
+			<variables name="WireBreak" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="OverFlow" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="UnderFlow" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="wrd_b3" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="wrd_b4" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="wrd_b5" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="wrd_b6" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="wrd_b7" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="wrd_b8" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="wrd_b9" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="wrd_b10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="wrd_b11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="wrd_b12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="wrd_b13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="wrd_b14" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="wrd_b15" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="Emotor_InOut" version="0.09" dateTime="dt#2025-08-21-13:43:47">
+		<attribute name="TypeSignatureCheckSumString" value="9872"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="12"></attribute>
+		<structure>
+			<variables name="Data" typeName="eMotStatus"></variables>
+			<variables name="RunSecs" typeName="INT">
+				<comment>Run time Seconds</comment>
+			</variables>
+			<variables name="RunMins" typeName="INT">
+				<comment>Run time Minuts</comment>
+			</variables>
+			<variables name="RunHours" typeName="UDINT">
+				<comment>Run time Hours</comment>
+			</variables>
+			<variables name="Status" typeName="INT"></variables>
+			<variables name="Pressure" typeName="AnalogChanel">
+				<comment>Pressure</comment>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="eMotStatus" version="0.18" dateTime="dt#2025-08-21-13:43:45">
+		<attribute name="TypeSignatureCheckSumString" value="D21B"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="3"></attribute>
+		<structure>
+			<variables name="Wrd1" typeName="WORD"></variables>
+			<variables name="Idle" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="Running" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="Wait" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="Alarm" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="Start" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="Stop" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="LocalRemote" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="PulsOnOff" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="Load" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="ResetRunTime" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="ToLoadManual" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="ShowToLoadManual" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="FilterpulseOn" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="PressWhileBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="AutoStartStopOn" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="BlockStartStop" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+			<variables name="Wrd2" typeName="WORD"></variables>
+			<variables name="ShowAutoStart" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="ShowTypeBlower" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="IsGutterBlower" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="IsBottomBlower" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="DontUse" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="ReadyToStart" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="Wrd2_b6" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="Wrd2_b7" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="Wrd2_b8" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="Wrd2_b9" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="Wrd2_b10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="Wrd2_b11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="Wrd2_b12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="Wrd2_b13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="Wrd2_b14" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="ForBlockManual" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="General" version="0.50" dateTime="dt#2025-09-30-07:43:27">
+		<comment>General struct used in most functionblocks</comment>
+		<attribute name="TypeSignatureCheckSumString" value="F64F"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="6"></attribute>
+		<structure>
+			<variables name="Word1" typeName="WORD">
+				<comment>ControlWord</comment>
+			</variables>
+			<variables name="Alarm_Active" typeName="BOOL">
+				<comment>Alarm is active</comment>
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="Alarm_Reset" typeName="BOOL">
+				<comment>Command reset alarm</comment>
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="W1B2" typeName="BOOL">
+				<comment>Manual mode is active</comment>
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="Buzzer" typeName="BOOL">
+				<comment>Buzzer is active</comment>
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="ServiceAirForeOkay" typeName="BOOL">
+				<comment>Service air is OK</comment>
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="ServiceAirAftOkay" typeName="BOOL">
+				<comment>res</comment>
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="Acknowledge" typeName="BOOL">
+				<comment>Ackowledge alarms</comment>
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="EMStopOkay" typeName="BOOL">
+				<comment>EmergencyStop is OK</comment>
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="aEmotorIsStarting" typeName="BOOL">
+				<comment>A Emotor is starting, other Emotors need to wait</comment>
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="aEmotorWaitOnPMS" typeName="BOOL">
+				<comment>If system not used for 15 min, stop all what still running </comment>
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="SimulationOn" typeName="BOOL">
+				<comment>Simulation is on, for testing only</comment>
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="Reloaderset12Active" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="Reloaderset34Active" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="PlcInRun" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="AutoCalibrate" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="ResetCalibrate" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+			<variables name="Word2" typeName="WORD"></variables>
+			<variables name="ShowAskPW" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="ScreenIsTouched" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="ScreenIsChanged" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="W2B5_wasBlockManSys2" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="W2B6_wasSys1Man" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="W2B7_WasSyS2Man" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="Sys1ToHold" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="Sys2ToHold" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="W2B10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="W2B11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="W2B12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="FirstScan" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="SystemISBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="ManualPressWhileBlocked" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+			<variables name="FirstStopAll" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="W2B4_wasBlockManSys1" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="Manual" typeName="manualWrd"></variables>
+			<variables name="NextStartDelayTime" typeName="INT">
+				<comment>Hold next Emotor to start in sec</comment>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="manualWrd" version="0.04" dateTime="dt#2025-08-21-12:32:48">
+		<attribute name="TypeSignatureCheckSumString" value="330D"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="2"></attribute>
+		<structure>
+			<variables name="wrd" typeName="WORD"></variables>
+			<variables name="Sys1Manual" typeName="BOOL">
+				<comment>b1</comment>
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="Sys2Manual" typeName="BOOL">
+				<comment>b2</comment>
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="Sys3Manual" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="Sys4Manual" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="Man_b4" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="Man_B5" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="Man_B6" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="Man_B7" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="Block_ManSys1" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="Block_ManSys2" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="B10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="B11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="B12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="B13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="B14" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="B15" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="Emotor_Out" version="0.04" dateTime="dt#2019-08-27-08:53:23">
+		<attribute name="TypeSignatureCheckSumString" value="BCB5"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="6"></attribute>
+		<structure>
+			<variables name="Start" typeName="BOOL"></variables>
+			<variables name="Stop" typeName="BOOL"></variables>
+			<variables name="PowerRequest" typeName="BOOL"></variables>
+			<variables name="Alarms" typeName="AlarmWord"></variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="AlarmWord" version="0.04" dateTime="dt#2019-08-14-08:44:17">
+		<comment>Struct for alarmword containing 16 bools</comment>
+		<attribute name="TypeSignatureCheckSumString" value="0F32"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="2"></attribute>
+		<structure>
+			<variables name="Wrd" typeName="WORD"></variables>
+			<variables name="Alarm_bit0" typeName="BOOL">
+				<attribute name="ExtractBit" value="0"></attribute>
+			</variables>
+			<variables name="Alarm_bit1" typeName="BOOL">
+				<attribute name="ExtractBit" value="1"></attribute>
+			</variables>
+			<variables name="Alarm_bit2" typeName="BOOL">
+				<attribute name="ExtractBit" value="2"></attribute>
+			</variables>
+			<variables name="Alarm_bit3" typeName="BOOL">
+				<attribute name="ExtractBit" value="3"></attribute>
+			</variables>
+			<variables name="Alarm_bit4" typeName="BOOL">
+				<attribute name="ExtractBit" value="4"></attribute>
+			</variables>
+			<variables name="Alarm_bit5" typeName="BOOL">
+				<attribute name="ExtractBit" value="5"></attribute>
+			</variables>
+			<variables name="Alarm_bit6" typeName="BOOL">
+				<attribute name="ExtractBit" value="6"></attribute>
+			</variables>
+			<variables name="Alarm_bit7" typeName="BOOL">
+				<attribute name="ExtractBit" value="7"></attribute>
+			</variables>
+			<variables name="Alarm_bit8" typeName="BOOL">
+				<attribute name="ExtractBit" value="8"></attribute>
+			</variables>
+			<variables name="Alarm_bit9" typeName="BOOL">
+				<attribute name="ExtractBit" value="9"></attribute>
+			</variables>
+			<variables name="Alarm_bit10" typeName="BOOL">
+				<attribute name="ExtractBit" value="10"></attribute>
+			</variables>
+			<variables name="Alarm_bit11" typeName="BOOL">
+				<attribute name="ExtractBit" value="11"></attribute>
+			</variables>
+			<variables name="Alarm_bit12" typeName="BOOL">
+				<attribute name="ExtractBit" value="12"></attribute>
+			</variables>
+			<variables name="Alarm_bit13" typeName="BOOL">
+				<attribute name="ExtractBit" value="13"></attribute>
+			</variables>
+			<variables name="Alarm_bit14" typeName="BOOL">
+				<attribute name="ExtractBit" value="14"></attribute>
+			</variables>
+			<variables name="Alarm_bit15" typeName="BOOL">
+				<attribute name="ExtractBit" value="15"></attribute>
+			</variables>
+		</structure>
+	</DDTSource>
+	<DDTSource DDTName="Parameters" version="0.07" dateTime="dt#2025-10-16-08:51:11">
+		<attribute name="TypeSignatureCheckSumString" value="A9B6"></attribute>
+		<attribute name="TypeDataDicSubfieldsCount" value="6"></attribute>
+		<structure>
+			<variables name="WaitOnPMS" typeName="BOOL">
+				<comment>This eMotor works with the ship PMS</comment>
+			</variables>
+			<variables name="StartupDelayTime" typeName="INT">
+				<comment>Time that other motors needs to wait</comment>
+			</variables>
+			<variables name="OneOutput" typeName="BOOL"></variables>
+			<variables name="OffByFIreSwitch" typeName="BOOL"></variables>
+			<variables name="DontReactOnlostRun" typeName="BOOL"></variables>
+		</structure>
+	</DDTSource>
+</FBExchangeFile>
