@@ -73,11 +73,16 @@ Actual travel times are measured and available on `ShortTime` and `LongTime` out
 
 ## Commissioning with Test mode
 
-1. Mechanically centre the valve by hand
-2. Set `Test = TRUE` in the PLC
-3. In the HMI, give a position command
-4. Have someone at the valve check the rotation direction
-5. Use `ShortTime` and `LongTime` outputs to set `MonitorTime` correctly
+On a ship there are often multiple selection valves of the same type — but several of them are physically mounted 180° rotated compared to others. This means "Left" on one valve routes cement the opposite direction compared to "Left" on the next valve. Terms like Left/Right or Port/Starboard become meaningless without checking the actual cement flow direction.
+
+The `Test` input solves this:
+
+1. The on-site technician sets `Test = TRUE` in the PLC program
+2. In the HMI, the valve can now be operated with the manual buttons — but only in **short pulses** instead of continuous movement. This prevents the valve from running past its end position before anyone can see what's happening.
+3. Someone stands at the valve and watches which way the cement (or air flow) goes
+4. If the valve moves the wrong way, swap the Left/Right outputs in the panel wiring — **don't change the PLC program**
+5. Once confirmed correct, set `Test = FALSE` and the valve operates normally
+6. Use the `ShortTime` and `LongTime` outputs to tune `MonitorTime` to the actual travel time of this specific valve
 
 ---
 
