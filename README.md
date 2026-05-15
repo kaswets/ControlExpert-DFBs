@@ -10,6 +10,7 @@ These blocks are used in real industrial installations — mainly maritime and p
 | DFB | Version | Description |
 |-----|---------|-------------|
 | [Emotor](./Emotor/) | 0.84 | Electric motor control with sequenced starting, alarms, and PMS integration |
+| [SwitchScreens](./SwitchScreens/) | 1.47 | Multi-HMI screen control — up to 4 identical Vijeo Designer panels sharing one PLC |
 
 ---
 
@@ -21,7 +22,7 @@ These blocks are used in real industrial installations — mainly maritime and p
 3. Select the `.xdb` file from the DFB folder
 4. All DDTs and the DFB are imported in one go
 
-> ⚠️ If shared DDTs like `General` already exist in your project, Control Expert may warn about version conflicts. Always check before overwriting.
+> ⚠️ If shared DDTs already exist in your project, Control Expert may warn about version conflicts. Always check before overwriting.
 
 ---
 
@@ -30,9 +31,12 @@ These blocks are used in real industrial installations — mainly maritime and p
 ```
 ControlExpert-DFBs/
 ├── Emotor/
-│   ├── emotor.xdb          ← Import this into Control Expert
-│   └── README.md           ← Emotor documentation
-└── README.md               ← This file
+│   ├── emotor.xdb              ← Import this into Control Expert
+│   └── README.md               ← Emotor documentation
+├── SwitchScreens/
+│   ├── switchscreens.xdb       ← Import this into Control Expert
+│   └── README.md               ← SwitchScreens documentation
+└── README.md                   ← This file
 ```
 
 ---
@@ -43,8 +47,8 @@ ControlExpert-DFBs/
 |---|---|
 | **Software** | Schneider Electric Control Expert V14.1 |
 | **PLC hardware** | Tested on BME P58 / BMX P34 series |
+| **HMI** | Vijeo Designer (for SwitchScreens) |
 | **Languages used** | Structured Text (ST) + Ladder (LD) |
-| **Diagnostics** | UREGDFB compatible (`IsTypeDiagnostic = TRUE`) |
 
 ---
 
