@@ -8,7 +8,7 @@
 
 ## Description
 
-Function block for Modbus TCP communication with **Aerzen** bulk compressor units.  
+Function block for Modbus TCP communication with **Aerzen** machines.  
 Supports two device types on separate IP addresses:
 
 - **Aertronic** — Aerzen's own controller (write: setpoint RPM via `DATA_EXCH`)
