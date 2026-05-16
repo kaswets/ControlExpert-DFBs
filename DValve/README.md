@@ -8,7 +8,7 @@
 
 ## Description
 
-Function block for controlling a **digital (on/off) valve** — normally closed.  
+Function block for controlling a **digital (on/off) valve** — normally closed & norrmally open.  
 Handles open/close commands, feedback monitoring, alarm detection, manual override, and HMI status communication.
 
 Supports both **single-output** (open only) and **dual-output** (separate open/close) valve types.  
