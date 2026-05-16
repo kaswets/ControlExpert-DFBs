@@ -8,8 +8,13 @@
 
 ## Description
 
-Function block for controlling a **digital (on/off) valve** — normally closed & norrmally open.  
+Function block for controlling a **digital (on/off) valve**.  
 Handles open/close commands, feedback monitoring, alarm detection, manual override, and HMI status communication.
+
+Supports both **normally closed** and **normally open** valve types via the `Parameters.NormallyOpen` setting.  
+This affects both the output logic and how the position feedback switches are interpreted:
+- **Normally closed** (default) — valve is closed without power, output energised to open
+- **Normally open** — valve is open without power, output energised to close. Feedback switches are interpreted inversely.
 
 Supports both **single-output** (open only) and **dual-output** (separate open/close) valve types.  
 The valve can be rotated on the HMI up to 360 degrees for correct visual representation of slide valves, butterfly valves, etc.
@@ -52,7 +57,7 @@ The valve can be rotated on the HMI up to 360 degrees for correct visual represe
 | `Parameters.MonitorTime` | `TIME` | — | Max travel time — alarm if valve doesn't reach position within this time |
 | `Parameters.Delayed_Return` | `TIME` | — | Delay closing output AND status after command removed |
 | `Parameters.Delayed_ReturnOutput` | `TIME` | — | Delay closing output only (not status) |
-| `Parameters.NormallyOpen` | `BOOL` | FALSE | Set TRUE for normally open valves |
+| `Parameters.NormallyOpen` | `BOOL` | FALSE | Set TRUE for normally open valves — inverts output logic and feedback interpretation |
 | `Parameters.Clino_Enable` | `BOOL` | FALSE | Enable clinometer interlock |
 | `Parameters.Clino_Signal` | `BOOL` | — | Close valve on clinometer signal (ship inclination) |
 | `Parameters.2Outputs` | `BOOL` | FALSE | Use separate OutputOpen / OutputClose instead of single Output |
